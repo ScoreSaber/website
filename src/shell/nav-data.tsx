@@ -103,7 +103,7 @@ export const socialLinks = [
    { href: 'https://patreon.com/scoresaber', label: 'Patreon', Icon: Icons.patreon },
    { href: 'https://bsky.app/profile/scoresaber.com', label: 'Bluesky', Icon: Icons.bluesky },
    { href: 'https://x.com/scoresaber', label: 'X', Icon: Icons.twitter },
-   { href: 'https://youtube.com/@ScoreSaberOfficial', label: 'YouTube', Icon: Icons.youtube }
+   { href: 'https://youtube.com/@ScoreSaber', label: 'YouTube', Icon: Icons.youtube }
 ];
 
 export const githubLink = { href: 'https://github.com/ScoreSaber/website', label: 'GitHub', Icon: Icons.github };
