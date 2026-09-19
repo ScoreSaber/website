@@ -22,7 +22,8 @@ type ScoreWithReplayViewCount = ScoreControllerGetScoreResponse['score'] & {
 };
 
 interface ReplayDialogProps {
-   scoreId: number;
+   scoreId?: number;
+   mapId?: string;
    trigger: (props: ReplayTriggerProps) => ReactNode;
    tooltip?: string;
    tooltipDelayMs?: number;
@@ -34,20 +35,22 @@ interface ReplayTriggerProps {
    openReplayAction: (event: MouseEvent<HTMLElement>) => void;
 }
 
-export function ReplayDialog({ scoreId, trigger, tooltip, tooltipDelayMs, tooltipSide }: ReplayDialogProps) {
+export function ReplayDialog({ scoreId, mapId, trigger, tooltip, tooltipDelayMs, tooltipSide }: ReplayDialogProps) {
    const t = useTranslations();
    const [loaded, setLoaded] = useState(false);
    const [open, setOpen] = useState(false);
    const [tooltipOpen, setTooltipOpen] = useState(false);
-   const replayUrl = getReplayArcviewerUrl({ scoreId: scoreId.toString() });
+   const replayUrl = mapId ?? (scoreId != null ? getReplayArcviewerUrl({ scoreId: scoreId.toString() }) : '');
+   const shouldFetchReplayViews = scoreId != null;
    const { data: replayViewCount } = useQuery({
       queryKey: ['scoreReplayViews', scoreId],
       queryFn: async () => {
+         if (scoreId == null) return null;
          const detail = await optionalApiData(api.score.scoreControllerGetScore({ id: scoreId, includeScoreStats: 'false' }));
          const score: ScoreWithReplayViewCount | undefined = detail?.score;
          return score?.replayViewCount ?? null;
       },
-      enabled: open || tooltipOpen,
+      enabled: shouldFetchReplayViews && (open || tooltipOpen),
       staleTime: 60_000
    });
    const replayViewCountLabel = replayViewCount == null || replayViewCount <= 0 ? null : t('score.replayViews', { count: replayViewCount });

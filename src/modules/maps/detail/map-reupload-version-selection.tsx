@@ -83,7 +83,7 @@ export function MapReuploadVersionSelection({
                   </Button>
                </SelectPrimitive.Trigger>
             </TooltipTrigger>
-            <TooltipContent side="right">{t('version')}</TooltipContent>
+            <TooltipContent side="top">{t('version')}</TooltipContent>
          </Tooltip>
       ) : (
          <SelectTrigger variant="filter" size="compact" className={cn('min-w-0 shadow-none', className)}>

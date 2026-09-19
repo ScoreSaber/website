@@ -60,6 +60,10 @@ export function getGameModeLabel(gameMode: string) {
    return stripped.replace(/([A-Z])/g, ' $1').trim();
 }
 
+export function getNoSoloGameModeLabel(gameMode: string) {
+   return gameMode.startsWith('Solo') ? gameMode.slice(4) : gameMode;
+}
+
 export function formatEnumLabel(value: string) {
    return value
       .toLowerCase()
