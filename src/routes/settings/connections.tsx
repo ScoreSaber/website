@@ -11,11 +11,11 @@ import { SettingsShell } from '@/modules/settings/settings-shell';
 import { api } from '@/shared/api/server-api';
 import { optionalApi } from '@/shared/result/api';
 import { buildNoindexHead } from '@/shared/seo/metadata';
-import { optionalSearchParamEnum, optionalSearchParamString, validateRequest } from '@/shared/url-state/params';
+import { optionalSearchParamEnum, optionalSearchParamString, requestOrNotFound } from '@/shared/url-state/params';
 import { SetPageBackground } from '@/shell/background/page-background-provider';
 
-const connectionOAuthProviders = ['steam', 'patreon', 'discord'] as const;
-type ConnectionOAuthProvider = (typeof connectionOAuthProviders)[number];
+type ConnectionOAuthProvider = 'steam' | 'patreon' | 'discord';
+const connectionOAuthProviders: ConnectionOAuthProvider[] = ['steam', 'patreon', 'discord'];
 type SettingsConnectionsSearch = ReturnType<typeof settingsConnectionsSearchSchema.parse>;
 
 const settingsConnectionsSearchSchema = z.object({
@@ -32,7 +32,7 @@ const getConnectionsSettingsData = createServerFn({ method: 'GET' }).handler(asy
 });
 
 export const Route = createFileRoute('/settings/connections')({
-   validateSearch: (search) => validateRequest(settingsConnectionsSearchSchema, search),
+   validateSearch: (search) => requestOrNotFound(settingsConnectionsSearchSchema.safeParse(search)),
    loaderDeps: ({ search }) => search,
    loader: () => getConnectionsSettingsData(),
    head: () => buildNoindexHead('Connections Settings', 'Manage your ScoreSaber connected accounts', '/settings/connections'),

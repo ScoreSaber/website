@@ -13,8 +13,12 @@ export function defineLudusPacketHandler<Type extends LudusHandledEnvelope['type
    return {
       type,
       handle(context, envelope) {
-         if (envelope.type !== type) return;
-         handle(context, envelope as LudusEnvelopeOf<Type>);
+         if (!isEnvelopeType(envelope, type)) return;
+         handle(context, envelope);
       }
    };
+}
+
+function isEnvelopeType<Type extends LudusHandledEnvelope['type']>(envelope: LudusEnvelope, type: Type): envelope is LudusEnvelopeOf<Type> {
+   return envelope.type === type;
 }

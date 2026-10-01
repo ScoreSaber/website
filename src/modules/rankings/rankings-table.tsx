@@ -32,7 +32,7 @@ import { useRouteHrefPreload } from '@/shared/url-state/use-route-href-preload';
 
 const PAGE_SIZE = 50;
 
-const DEFAULT_DIRECTIONS: Record<PlayerControllerGetPlayersSort, PlayerControllerGetPlayersSortDirection> = {
+const DEFAULT_DIRECTIONS = {
    rank: 'asc',
    countryRank: 'asc',
    totalPP: 'desc',
@@ -45,7 +45,7 @@ const DEFAULT_DIRECTIONS: Record<PlayerControllerGetPlayersSort, PlayerControlle
    averageAccuracy: 'desc',
    weightedAverageAccuracy: 'desc',
    completionAccuracy: 'desc'
-};
+} satisfies Record<PlayerControllerGetPlayersSort, PlayerControllerGetPlayersSortDirection>;
 
 interface SortableColumn {
    sortField: PlayerControllerGetPlayersSort;

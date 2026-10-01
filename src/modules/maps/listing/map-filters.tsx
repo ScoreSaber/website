@@ -45,6 +45,12 @@ const SORT_OPTIONS: { value: MapControllerGetMapListingsSortBy }[] = [
    { value: 'totalScores' }
 ];
 
+interface StarRangeUpdates extends SearchParamsRecord {
+   minStars?: number;
+   maxStars?: number;
+   status?: string;
+}
+
 export const DEFAULT_MIN_STARS = 0;
 export const DEFAULT_MAX_STARS = 16;
 
@@ -121,9 +127,9 @@ export function MapFilters<TLocation>({
    const showPagination = totalPages > 1;
    const starRange = pendingStarRange ?? [currentMinStars, currentMaxStars];
    const debouncedStarNavigation = useDebouncedCallback((min: number, max: number) => {
-      const updates: Record<string, string | undefined> = {
-         minStars: min === DEFAULT_MIN_STARS ? undefined : String(min),
-         maxStars: max === DEFAULT_MAX_STARS ? undefined : String(max)
+      const updates: StarRangeUpdates = {
+         minStars: min === DEFAULT_MIN_STARS ? undefined : min,
+         maxStars: max === DEFAULT_MAX_STARS ? undefined : max
       };
       const willBeRankedMode = RANKED_SORTS.has(currentSortBy) || min > DEFAULT_MIN_STARS;
       if (willBeRankedMode && !isRankedMode) {

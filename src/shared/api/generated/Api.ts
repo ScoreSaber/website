@@ -18879,7 +18879,44 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
  * @tags Auth
  * @name PasskeyControllerStartRegistration
  * @request POST:/api/v2/auth/passkey/register/options
- * @response `200` `Record<string,any>` Begin passkey registration for the current account
+ * @response `200` `{
+    rp: {
+    id?: string,
+    name: string,
+
+},
+    user: {
+    id: string,
+    name: string,
+    displayName: string,
+
+},
+    challenge: string,
+    pubKeyCredParams: ({
+    alg: number,
+    type: "public-key",
+
+})[],
+    timeout?: number,
+    excludeCredentials?: ({
+    id: string,
+    type: "public-key",
+    transports?: ("ble" | "cable" | "hybrid" | "internal" | "nfc" | "smart-card" | "usb")[],
+
+})[],
+    authenticatorSelection?: {
+    authenticatorAttachment?: "cross-platform" | "platform",
+    residentKey?: "discouraged" | "preferred" | "required",
+    requireResidentKey?: boolean,
+    userVerification?: "discouraged" | "preferred" | "required",
+
+},
+    hints?: ("hybrid" | "security-key" | "client-device")[],
+    attestation?: "direct" | "enterprise" | "indirect" | "none",
+    attestationFormats?: ("fido-u2f" | "packed" | "android-safetynet" | "android-key" | "tpm" | "apple" | "none")[],
+    extensions?: Record<string,any>,
+
+}` Begin passkey registration for the current account
  * @response `401` `{
     statusCode: 401,
     error: "Unauthorized",
@@ -18929,7 +18966,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
  */
       passkeyControllerStartRegistration: (params: RequestParams = {}) =>
          this.request<
-            Record<string, any>,
+            {
+               rp: {
+                  id?: string;
+                  name: string;
+               };
+               user: {
+                  id: string;
+                  name: string;
+                  displayName: string;
+               };
+               challenge: string;
+               pubKeyCredParams: {
+                  alg: number;
+                  type: 'public-key';
+               }[];
+               timeout?: number;
+               excludeCredentials?: {
+                  id: string;
+                  type: 'public-key';
+                  transports?: ('ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb')[];
+               }[];
+               authenticatorSelection?: {
+                  authenticatorAttachment?: 'cross-platform' | 'platform';
+                  residentKey?: 'discouraged' | 'preferred' | 'required';
+                  requireResidentKey?: boolean;
+                  userVerification?: 'discouraged' | 'preferred' | 'required';
+               };
+               hints?: ('hybrid' | 'security-key' | 'client-device')[];
+               attestation?: 'direct' | 'enterprise' | 'indirect' | 'none';
+               attestationFormats?: ('fido-u2f' | 'packed' | 'android-safetynet' | 'android-key' | 'tpm' | 'apple' | 'none')[];
+               extensions?: Record<string, any>;
+            },
             | {
                  statusCode: 401;
                  error: 'Unauthorized';
@@ -19162,8 +19230,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
  * @request POST:/api/v2/auth/passkey/login/options
  * @response `200` `{
     sessionId: string,
-  /** WebAuthn credential request options *\/
-    options: Record<string,any>,
+    options: {
+    challenge: string,
+    timeout?: number,
+    rpId?: string,
+    allowCredentials?: ({
+    id: string,
+    type: "public-key",
+    transports?: ("ble" | "cable" | "hybrid" | "internal" | "nfc" | "smart-card" | "usb")[],
+
+})[],
+    userVerification?: "discouraged" | "preferred" | "required",
+    hints?: ("hybrid" | "security-key" | "client-device")[],
+    extensions?: Record<string,any>,
+
+},
 
 }` Begin a usernameless passkey login
  * @response `401` `{
@@ -19205,8 +19286,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          this.request<
             {
                sessionId: string;
-               /** WebAuthn credential request options */
-               options: Record<string, any>;
+               options: {
+                  challenge: string;
+                  timeout?: number;
+                  rpId?: string;
+                  allowCredentials?: {
+                     id: string;
+                     type: 'public-key';
+                     transports?: ('ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb')[];
+                  }[];
+                  userVerification?: 'discouraged' | 'preferred' | 'required';
+                  hints?: ('hybrid' | 'security-key' | 'client-device')[];
+                  extensions?: Record<string, any>;
+               };
             },
             | {
                  statusCode: 401;

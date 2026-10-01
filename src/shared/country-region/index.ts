@@ -1,18 +1,19 @@
 import { z } from 'zod';
 
-import { countryCodeSchema, type CountryCode, type RegionCode, REGIONS } from '@/shared/country-region/countries';
+import { countryCodeSchema, type RegionCode, REGIONS } from '@/shared/country-region/countries';
 
-type CountryRegionFilterValue = { kind: 'countries'; countries: CountryCode[] } | { kind: 'region'; region: RegionCode };
+type CountryRegionFilterValue = z.infer<typeof countryRegionFilterSchema>;
+type Region = (typeof REGIONS)[number];
 
 const regionCodeSet = new Set<string>(REGIONS.map((region) => region.code));
-const regionByCode = new Map<RegionCode, (typeof REGIONS)[number]>(REGIONS.map((region) => [region.code, region]));
-const regionByCountries = new Map<string, (typeof REGIONS)[number]>(
-   REGIONS.flatMap((region) => [
-      [region.countries, region] as const,
-      ...(region.legacyCountries ?? []).map((countries) => [countries, region] as const)
+const regionByCode = new Map<RegionCode, Region>(REGIONS.map((region): [RegionCode, Region] => [region.code, region]));
+const regionByCountries = new Map<string, Region>(
+   REGIONS.flatMap((region): [string, Region][] => [
+      [region.countries, region],
+      ...(region.legacyCountries ?? []).map((countries): [string, Region] => [countries, region])
    ])
 );
-const regionCodeSchema = z.custom<RegionCode>((value) => typeof value === 'string' && regionCodeSet.has(value));
+const regionCodeSchema = z.string().refine((value): value is RegionCode => regionCodeSet.has(value));
 
 const countryRegionFilterSchema = z.union([
    z.object({
@@ -25,16 +26,13 @@ const countryRegionFilterSchema = z.union([
    })
 ]);
 
-const countryRegionSearchSchema = z.preprocess((value) => parseCountryRegionParam(value), countryRegionFilterSchema.optional());
+const countryRegionSearchSchema = z
+   .union([countryRegionFilterSchema, z.string().transform(parseCountryRegionCsv)])
+   .optional()
+   .catch(undefined);
+const parseCountryRegionParam = countryRegionSearchSchema.parse.bind(countryRegionSearchSchema);
 
-function parseCountryRegionParam(value: unknown): CountryRegionFilterValue | undefined {
-   if (value == null || value === '') return undefined;
-
-   const parsed = countryRegionFilterSchema.safeParse(value);
-   if (parsed.success) return parsed.data;
-
-   if (typeof value !== 'string') return undefined;
-
+function parseCountryRegionCsv(value: string): CountryRegionFilterValue | undefined {
    const raw = value
       .split(',')
       .map((part) => part.trim().toUpperCase())
@@ -58,7 +56,7 @@ function parseCountryRegionParam(value: unknown): CountryRegionFilterValue | und
 
 function formatCountryRegionParam(value: CountryRegionFilterValue | string | null | undefined) {
    if (!value) return undefined;
-   if (typeof value === 'string') return value || undefined;
+   if (typeof value === 'string') return value;
 
    if (value.kind === 'region') {
       return regionByCode.get(value.region)?.countries;

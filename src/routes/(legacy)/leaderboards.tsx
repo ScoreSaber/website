@@ -1,12 +1,11 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
-import { legacyLeaderboardsSearchParams } from './-redirects';
+import { legacyLeaderboardsQuery } from './-redirects';
 
 export const Route = createFileRoute('/(legacy)/leaderboards')({
-   validateSearch: (search) => search,
+   validateSearch: (search) => legacyLeaderboardsQuery.parse(search),
    loaderDeps: ({ search }) => search,
    loader: ({ deps }) => {
-      const search = legacyLeaderboardsSearchParams(deps);
-      throw redirect({ to: '/maps', search: { ...search, page: search.page && search.page > 1 ? search.page : undefined }, statusCode: 308 });
+      throw redirect({ to: '/maps', search: { ...deps, page: deps.page && deps.page > 1 ? deps.page : undefined }, statusCode: 308 });
    }
 });

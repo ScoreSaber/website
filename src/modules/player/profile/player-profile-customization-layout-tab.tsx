@@ -13,12 +13,13 @@ import { Separator } from '@/components/ui/separator';
 
 import { METRIC_KEYS, type MetricKey } from '@/modules/player/chart/chart-types';
 import { PLAYER_PROFILE_STAT_IDS, type PlayerProfileStatId } from '@/modules/player/profile/player-profile-header';
+import type { UserControllerUpdateProfileCustomizationPayload } from '@/shared/api/generated/Api';
 import { ConditionalOverlay } from '@/shared/components/conditional-overlay';
 import { SupporterRequiredOverlay } from '@/shared/components/supporter-required-overlay';
 import { cn } from '@/shared/format/helpers';
 
-export const PROFILE_SECTION_IDS = ['charts', 'bio', 'pinnedScores', 'scores'] as const;
-export type ProfileSectionId = (typeof PROFILE_SECTION_IDS)[number];
+export type ProfileSectionId = NonNullable<UserControllerUpdateProfileCustomizationPayload['sectionOrder']>[number];
+export const PROFILE_SECTION_IDS: ProfileSectionId[] = ['charts', 'bio', 'pinnedScores', 'scores'];
 export const REQUIRED_PROFILE_SECTION_IDS: readonly ProfileSectionId[] = ['scores'];
 
 export interface ProfileLayoutCustomization {
@@ -57,13 +58,13 @@ export function PlayerProfileCustomizationLayoutTab({
    onMoveSectionAction
 }: PlayerProfileCustomizationLayoutTabProps) {
    const t = useTranslations();
-   const sectionLabels: Record<ProfileSectionId, string> = {
+   const sectionLabels = {
       charts: t('player.customization.layout.sectionCharts'),
       bio: t('player.customization.layout.sectionBio'),
       pinnedScores: t('player.customization.layout.sectionPinnedScores'),
       scores: t('player.customization.layout.sectionScores')
    };
-   const statLabels: Partial<Record<PlayerProfileStatId, string>> = {
+   const statLabels = {
       rankedPlays: t('player.rankedPlays'),
       rankedScore: t('player.rankedScore'),
       rankedAcc: t('player.rankedAcc'),
@@ -74,7 +75,7 @@ export function PlayerProfileCustomizationLayoutTab({
       replayViews: t('player.replayViews'),
       role: t('player.role')
    };
-   const chartMetricLabels: Record<MetricKey, string> = {
+   const chartMetricLabels = {
       rank: t('player.chartMetricRankShort'),
       totalPP: t('common.pp'),
       averageAccuracy: t('player.chartMetricAccShort'),

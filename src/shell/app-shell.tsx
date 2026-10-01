@@ -10,7 +10,8 @@ import { AuthProvider } from '@/modules/auth';
 import { OmniSearchProvider } from '@/modules/search/search-provider';
 import type { UserControllerGetMeResponse } from '@/shared/api/generated/ApiParams';
 import { dynamic } from '@/shared/components/dynamic';
-import { TranslationContextHighlighter, type TranslationMessages } from '@/shared/i18n/translation-context-highlighter';
+import type { Messages } from '@/shared/i18n/messages';
+import { TranslationContextHighlighter } from '@/shared/i18n/translation-context-highlighter';
 import { ConsentManagerGate } from '@/shared/privacy/consent-manager-gate';
 import { QueryProvider } from '@/shared/query/query-provider';
 import { ThemeProvider } from '@/shared/ui-adjacent/theme-provider';
@@ -36,7 +37,7 @@ export function AppShell({
    children
 }: {
    initialUser: UserControllerGetMeResponse | null;
-   messages: TranslationMessages;
+   messages: Messages;
    visibleLocales: Locale[];
    initialSidebarCollapsed: boolean | null;
    isMac: boolean;

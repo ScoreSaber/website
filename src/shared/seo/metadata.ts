@@ -43,6 +43,7 @@ export function buildSeoHead({
    const canonicalUrl = path ? absoluteSiteUrl(path) : undefined;
    const imageUrl = absoluteSiteUrl(image);
    const robots = noindex ? 'noindex, nofollow' : 'index, follow';
+   const links: HeadLink[] = canonicalUrl ? [{ rel: 'canonical', href: canonicalUrl }] : [];
 
    const meta: HeadMeta[] = [
       { title: pageTitle },
@@ -65,7 +66,7 @@ export function buildSeoHead({
 
    return {
       meta,
-      links: canonicalUrl ? ([{ rel: 'canonical', href: canonicalUrl }] satisfies HeadLink[]) : []
+      links
    };
 }
 

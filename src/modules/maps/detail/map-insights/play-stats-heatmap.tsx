@@ -25,8 +25,9 @@ type OutcomePlayKey = Extract<keyof PlayStats['buckets'][number] & keyof PlaySta
 type OutcomeFromPlayKey<T extends string> = T extends `${infer Outcome}Plays` ? Uppercase<Outcome> : never;
 type HeatmapOutcome = OutcomeFromPlayKey<OutcomePlayKey>;
 type HeatmapColumn = { start: number } & Record<HeatmapOutcome, number>;
+type OutcomeLabelKey = 'score.historyFilterRestarts' | 'score.historyFilterQuits' | 'score.historyFilterFails';
 
-const HEATMAP_OUTCOME_ORDER = ['RESTART', 'QUIT', 'FAIL'] as const satisfies readonly HeatmapOutcome[];
+const HEATMAP_OUTCOME_ORDER: HeatmapOutcome[] = ['RESTART', 'QUIT', 'FAIL'];
 
 const TRACKING_START = new Date('2026-06-09');
 
@@ -34,7 +35,7 @@ const OUTCOME_META = {
    RESTART: { labelKey: 'score.historyFilterRestarts', playKey: 'restartPlays', rgb: '14, 165, 233', dotClass: 'bg-sky-500' },
    QUIT: { labelKey: 'score.historyFilterQuits', playKey: 'quitPlays', rgb: '245, 158, 11', dotClass: 'bg-amber-500' },
    FAIL: { labelKey: 'score.historyFilterFails', playKey: 'failPlays', rgb: '239, 68, 68', dotClass: 'bg-score-combo-broken' }
-} as const satisfies Record<HeatmapOutcome, { labelKey: string; playKey: OutcomePlayKey; rgb: string; dotClass: string }>;
+} satisfies Record<HeatmapOutcome, { labelKey: OutcomeLabelKey; playKey: OutcomePlayKey; rgb: string; dotClass: string }>;
 
 const OUTCOME_STORAGE_KEY = 'map-insights-heatmap-outcomes';
 const outcomeFiltersSchema = z.array(z.enum(HEATMAP_OUTCOME_ORDER));

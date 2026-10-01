@@ -32,12 +32,14 @@ function usePersistedLeaderboardSearch(search?: Partial<LeaderboardSearchParams>
 }
 
 function parsePersistedLeaderboardSearch(search: SearchParamsRecord): LeaderboardSearchParams {
+   const searchTerm = search.search;
+   const highlight = search.highlight;
    return {
       page: 1,
-      search: typeof search.search === 'string' ? search.search : undefined,
+      search: typeof searchTerm === 'string' ? searchTerm : undefined,
       scope: parseLeaderboardScope(search.scope),
-      pivot: isLeaderboardPivot(search.pivot) ? search.pivot : undefined,
-      highlight: typeof search.highlight === 'number' ? search.highlight : undefined,
+      pivot: LEADERBOARD_CONTROLLER_GET_LEADERBOARD_SCORES_BY_ID_PIVOT.find((pivot) => pivot === search.pivot),
+      highlight: typeof highlight === 'number' ? highlight : undefined,
       tab: search.tab === 'rank-request' || search.tab === 'leaderboard' ? search.tab : undefined
    };
 }
@@ -45,10 +47,6 @@ function parsePersistedLeaderboardSearch(search: SearchParamsRecord): Leaderboar
 function parseLeaderboardScope(value: SearchParamValue): LeaderboardSearchParams['scope'] {
    if (value === 'country' || value === 'region') return value;
    return parseCountryRegionParam(value);
-}
-
-function isLeaderboardPivot(value: SearchParamValue): value is LeaderboardSearchParams['pivot'] {
-   return typeof value === 'string' && LEADERBOARD_CONTROLLER_GET_LEADERBOARD_SCORES_BY_ID_PIVOT.some((pivot) => pivot === value);
 }
 
 export { usePersistedLeaderboardSearch };

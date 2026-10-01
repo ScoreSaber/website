@@ -13,14 +13,15 @@ import type { OperationAction } from '@/modules/player/operations/operation-acti
 import { ConfirmDialog } from '@/shared/components/confirm-dialog';
 
 type ReportReasonLabelKey = 'inappropriateProfile' | 'impersonation' | 'harassment' | 'cheating' | 'other';
+type ReportReason = { value: PlayerReportReason; labelKey: ReportReasonLabelKey };
 
-const reportReasons = [
+const reportReasons: ReportReason[] = [
    { value: 'INAPPROPRIATE_PROFILE', labelKey: 'inappropriateProfile' },
    { value: 'IMPERSONATION', labelKey: 'impersonation' },
    { value: 'HARASSMENT', labelKey: 'harassment' },
    { value: 'CHEATING', labelKey: 'cheating' },
    { value: 'OTHER', labelKey: 'other' }
-] satisfies Array<{ value: PlayerReportReason; labelKey: ReportReasonLabelKey }>;
+];
 
 interface PlayerReportDialogProps {
    open: boolean;

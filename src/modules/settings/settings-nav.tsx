@@ -10,7 +10,7 @@ import { useAuth } from '@/modules/auth';
 import { buildSettingsLocation, SETTINGS_TABS, type SettingsTab } from '@/modules/settings/settings-tabs';
 import Permissions from '@/shared/permissions';
 
-const TAB_ICONS: Record<SettingsTab, React.ReactNode> = {
+const TAB_ICONS = {
    account: <UserCircle2 className="size-3" />,
    connections: <Plug className="size-3" />,
    perks: <Database className="size-3" />,

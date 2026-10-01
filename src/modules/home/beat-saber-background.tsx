@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 
 import { BeatSaberParticles } from './beat-saber-particles';
 
-const MENU_BACKGROUND_STYLE = {
+const MENU_BACKGROUND_STYLE: CSSProperties = {
    background: [
       'radial-gradient(ellipse at 50% 44%, rgba(92, 205, 238, 0.34) 0%, rgba(31, 134, 199, 0.29) 29%, rgba(7, 66, 108, 0.18) 52%, rgba(2, 10, 24, 0) 78%)',
       'radial-gradient(ellipse 88% 58% at 50% -8%, rgba(255, 224, 82, 0.34) 0%, rgba(255, 199, 28, 0.13) 34%, rgba(255, 199, 28, 0) 70%)',
@@ -10,18 +10,18 @@ const MENU_BACKGROUND_STYLE = {
       'radial-gradient(ellipse at 85% 66%, rgba(39, 136, 255, 0.17) 0%, rgba(39, 136, 255, 0) 48%)',
       'linear-gradient(180deg, #00020b 0%, #020716 24%, #061d30 54%, #064162 100%)'
    ].join(', ')
-} satisfies CSSProperties;
+};
 
-const FLOOR_HAZE_STYLE = {
+const FLOOR_HAZE_STYLE: CSSProperties = {
    background: 'linear-gradient(180deg, rgba(73, 220, 255, 0) 0%, rgba(73, 220, 255, 0.24) 38%, rgba(5, 64, 96, 0.54) 100%)'
-} satisfies CSSProperties;
+};
 
-const PAGE_DARKENING_STYLE = {
+const PAGE_DARKENING_STYLE: CSSProperties = {
    background: [
       'radial-gradient(ellipse 155% 76% at 50% 0%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.24) 68%, rgba(0, 0, 0, 0.64) 100%)',
       'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.18) 34%, rgba(0, 0, 0, 0.78) 100%)'
    ].join(', ')
-} satisfies CSSProperties;
+};
 
 export function BeatSaberPageBackground() {
    return (

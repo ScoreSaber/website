@@ -29,7 +29,7 @@ function serializePersistedSearchCookieValue(value: Record<string, string>) {
 }
 
 function readPersistedSearchCookieValue(storageKey: string) {
-   if (typeof document === 'undefined') return {};
+   if (globalThis.document === undefined) return {};
 
    const cookieName = `${getPersistedSearchCookieName(storageKey)}=`;
    const cookie = document.cookie

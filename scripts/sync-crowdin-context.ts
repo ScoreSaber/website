@@ -2,12 +2,13 @@ import { Err, Ok, Result, TaggedError } from 'better-result';
 import ts from 'typescript';
 import { z } from 'zod';
 
+import type { Messages } from '../src/shared/i18n/messages';
+
 import { readdirSync, readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { relative, resolve } from 'node:path';
 
 type Viewport = 'desktop' | 'mobile';
-type Messages = { [key: string]: string | Messages };
 
 const messagesSchema: z.ZodType<Messages> = z.lazy(() => z.record(z.string(), z.union([z.string(), messagesSchema])));
 

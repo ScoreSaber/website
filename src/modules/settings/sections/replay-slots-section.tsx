@@ -249,6 +249,7 @@ function ReplayRow({
    const difficulty = leaderboard
       ? `${getDifficultyLabel(leaderboard.difficulty.difficulty)}${isRanked ? ` (${formatStars(leaderboard.realm.stars)})` : ''}`
       : t('settings.perks.replaySlots.unknownDifficulty');
+   const leaderboardSearch = { page: 1, highlight: score?.id };
    const rowContent = (
       <>
          {showTimeRemaining && (
@@ -290,7 +291,7 @@ function ReplayRow({
          {leaderboard ? (
             <mapDifficultyRoute.Link
                params={{ id: leaderboard.map.id, leaderboardId: leaderboard.id }}
-               search={{ page: 1, ...(score ? { highlight: score.id } : {}) }}
+               search={leaderboardSearch}
                className="contents"
             >
                {rowContent}

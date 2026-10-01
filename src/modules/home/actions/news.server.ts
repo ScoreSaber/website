@@ -149,14 +149,15 @@ type XPost = {
    post: HomeNewsPost;
    linkedUrls: string[];
 };
-
-let cachedFeed: { expiresAt: number; feed: HomeNewsFeed } | null = null;
-let pendingRefresh: Promise<void> | null = null;
-const cachedSources: {
+interface CachedSources {
    patreon: HomeNewsPost[] | null;
    youtube: YouTubeVideo[] | null;
    x: XPost[] | null;
-} = {
+}
+
+let cachedFeed: { expiresAt: number; feed: HomeNewsFeed } | null = null;
+let pendingRefresh: Promise<void> | null = null;
+const cachedSources: CachedSources = {
    patreon: null,
    youtube: null,
    x: null
@@ -331,7 +332,7 @@ async function fetchXPosts(): Promise<XPost[]> {
          {
             post: {
                id: `x:${tweet.id}`,
-               source: 'x' as const,
+               source: 'x',
                sourceLabel,
                sourceHref,
                repostedBy: originalUsername

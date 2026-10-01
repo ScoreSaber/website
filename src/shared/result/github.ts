@@ -22,13 +22,13 @@ type GithubJsonCacheEntry<T> = {
 };
 
 function githubHeaders() {
-   const headers: Record<string, string> = {
+   const headers = new Headers({
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
-   };
+   });
 
    if (process.env.GITHUB_TOKEN) {
-      headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+      headers.set('Authorization', `Bearer ${process.env.GITHUB_TOKEN}`);
    }
 
    return headers;
@@ -93,7 +93,7 @@ function loadGithubJson<T, E>(url: string, schema: z.ZodType<T>, toError: Github
          );
       }
 
-      const raw = yield* Result.await(
+      const raw: unknown = yield* Result.await(
          Result.tryPromise({
             try: () => response.json(),
             catch: (cause) =>

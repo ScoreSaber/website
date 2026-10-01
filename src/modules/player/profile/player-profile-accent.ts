@@ -25,12 +25,6 @@ export const DEFAULT_PROFILE_CUSTOMIZATION_STYLE: PlayerProfileCustomizationStyl
    supporterNameColorEnabled: true
 };
 
-type ProfileAccentProperties = CSSProperties & {
-   '--profile-accent': string;
-   '--profile-accent-foreground': string;
-   '--profile-accent-active-foreground': string;
-};
-
 export function normalizeProfileCustomizationStyle(
    customization: PlayerProfileCustomizationStyle | null | undefined
 ): PlayerProfileCustomizationStyle {
@@ -48,13 +42,18 @@ export function normalizeProfileCustomizationStyle(
    };
 }
 
-export function getProfileAccentProperties(customization: PlayerProfileCustomizationStyle | null | undefined): ProfileAccentProperties | undefined {
+export function getProfileAccentProperties(customization: PlayerProfileCustomizationStyle | null | undefined) {
    const style = normalizeProfileCustomizationStyle(customization);
    if (!style.accentColor) return undefined;
 
-   return {
+   const properties: CSSProperties & {
+      '--profile-accent': string;
+      '--profile-accent-foreground': string;
+      '--profile-accent-active-foreground': string;
+   } = {
       '--profile-accent': style.accentColor,
       '--profile-accent-foreground': style.accentForegroundColor ?? DEFAULT_PROFILE_ACCENT_FOREGROUND_COLOR,
       '--profile-accent-active-foreground': style.accentForegroundActiveColor ?? DEFAULT_PROFILE_ACCENT_ACTIVE_FOREGROUND_COLOR
    };
+   return properties;
 }

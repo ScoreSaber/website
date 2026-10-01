@@ -59,9 +59,7 @@ export function ScoreRank({
             <Time
                short={true}
                date={timeSet}
-               longRelativeClassName={
-                  cq ? '@min-[600px]/scorecard:[font-size:var(--short-time-font-size)]' : 'lg:[font-size:var(--short-time-font-size)]'
-               }
+               longRelativeClassName={cq ? '@min-[600px]/scorecard:text-(length:--short-time-font-size)' : 'lg:text-(length:--short-time-font-size)'}
             />
          </span>
          <DeviceDisplay

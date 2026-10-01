@@ -26,12 +26,12 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 function getSystemTheme(): ResolvedTheme {
-   if (typeof window === 'undefined') return 'dark';
+   if (globalThis.window === undefined) return 'dark';
    return window.matchMedia(THEME_MEDIA_QUERY).matches ? 'dark' : 'light';
 }
 
 function getInitialTheme(): Theme {
-   if (typeof window === 'undefined') return 'system';
+   if (globalThis.window === undefined) return 'system';
    return parseTheme(Result.unwrapOr(readStorageValue(THEME_STORAGE_KEY), null));
 }
 

@@ -21,7 +21,7 @@ async function applyPersistedSearchParams<TSearch extends SearchParamsRecord>({
    if (!enabled || persistedKeys.length === 0) return searchParams;
 
    const stored = parsePersistedSearchCookieValue(getCookie(getPersistedSearchCookieName(storageKey)));
-   const next: Record<string, string | string[] | undefined> = { ...searchParams };
+   const next = { ...searchParams };
    const validationSearch: SearchParamsRecord = {};
 
    for (const [key, value] of Object.entries(searchParams)) {

@@ -1,9 +1,9 @@
-import { type ComponentType, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ExternalLink, Maximize2, Play, Repeat2 } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import type { HomeNewsPost, HomeNewsQuotedPost, HomeNewsSource, HomeNewsVideo } from './actions/news';
+import type { HomeNewsPost, HomeNewsQuotedPost, HomeNewsVideo } from './actions/news';
 import { HomeColumnEmptyCard } from './home-column';
 
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ const NEWS_SOCIAL_LABELS = new Set(['Patreon', 'X', 'YouTube']);
 
 const NEWS_ACTION_CLASS = 'text-muted-foreground hover:text-primary rounded-md p-1.5 transition-colors';
 
-const SOURCE_ICONS: Record<HomeNewsSource, ComponentType<{ className?: string; 'aria-hidden'?: boolean }>> = {
+const SOURCE_ICONS = {
    patreon: Icons.patreon,
    x: Icons.twitter,
    youtube: Icons.youtube

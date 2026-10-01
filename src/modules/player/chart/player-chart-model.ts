@@ -1,4 +1,4 @@
-import type { ChartDataset } from 'chart.js';
+import type { ChartDataset, ChartOptions } from 'chart.js';
 
 import { type MetricKey, type MetricLabel, METRICS, type PlayerChartMetricStat, type PlayerChartStats, type TimeRange } from './chart-types';
 
@@ -24,7 +24,7 @@ function getTimeRangePlayerHistory(history: PlayerControllerGetPlayerHistoryItem
    return history.filter((entry) => new Date(entry.createdAt).getTime() >= earliestTime);
 }
 
-function getPlayerChartNowValues(stats: PlayerChartStats): Record<MetricKey, number | null> {
+function getPlayerChartNowValues(stats: PlayerChartStats) {
    return {
       rank: stats.rank === -1 ? null : stats.rank,
       totalPP: stats.totalPP,
@@ -131,7 +131,7 @@ function buildPlayerChartDatasets({
    const previousHistoryByCreatedAt = getPreviousHistoryByCreatedAt(fullHistory);
    const latestHistoryEntry = fullHistory[fullHistory.length - 1];
 
-   return activeKeys.map((key) => {
+   return activeKeys.map((key): ChartDataset<'line', DatedChartPoint[]> => {
       const isRankMetric = key === 'rank';
       const historyData = sortedHistory.map((entry, i) => {
          const val = getHistoryMetricValue(key, entry, previousHistoryByCreatedAt.get(entry.createdAt));
@@ -179,7 +179,7 @@ function buildPlayerChartDatasets({
                     return undefined;
                  }
               }
-      } satisfies ChartDataset<'line', DatedChartPoint[]>;
+      };
    });
 }
 
@@ -204,7 +204,7 @@ function buildPlayerChartScales({
    maxTime: number;
    formatTick: (value: number) => string;
 }) {
-   const result: Record<string, object> = {
+   const result: NonNullable<ChartOptions<'line'>['scales']> = {
       x: {
          type: 'linear',
          min: minTime,
@@ -244,7 +244,7 @@ function buildPlayerChartScales({
                return m.formatTick(num);
             }
          },
-         reverse: m.reverse ?? false,
+         reverse: m.reverse,
          grid: {
             drawOnChartArea: i === 0,
             color: chartColors.grid

@@ -24,7 +24,7 @@ interface BackgroundDebugPanelProps {
 
 export function BackgroundDebugPanel({ results, onSwap }: BackgroundDebugPanelProps) {
    const [minimized, setMinimized] = useState<boolean>(() => {
-      if (typeof window === 'undefined') return false;
+      if (globalThis.window === undefined) return false;
       return Result.unwrapOr(readStorageValue(MINIMIZED_STORAGE_KEY), null) === 'true';
    });
    const [openIds, setOpenIds] = useState<Set<string>>(new Set());
@@ -119,7 +119,6 @@ function DebugItem({ rank, result, open, pinned, onOpenChange, onTogglePin, onSw
          <div className="flex items-center gap-1 pr-1">
             <CollapsibleTrigger className="hover:bg-muted/50 flex min-w-0 flex-1 cursor-default items-center gap-2 p-2 text-left">
                <span className="text-muted-foreground w-6 font-mono text-xs">#{rank}</span>
-               {/* oxlint-disable-next-line nextjs/no-img-element */}
                <img src={result.url} alt="" className="h-10 w-10 rounded object-cover" />
                <div className="min-w-0 flex-1">
                   <div className="font-mono text-xs">{result.score.toFixed(4)}</div>

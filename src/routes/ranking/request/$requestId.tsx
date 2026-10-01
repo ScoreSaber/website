@@ -5,19 +5,21 @@ import { parseLegacyRouteId } from '@/routes/(legacy)/-redirects';
 import { publicApi } from '@/shared/api/server-api';
 import { optionalApiData } from '@/shared/result/api';
 
+type RankRequestRedirect = { name: 'rankRequests' } | { name: 'map'; id: number } | { name: 'mapDifficulty'; id: number; leaderboardId: number };
+
 const getRankRequestRedirect = createServerFn({ method: 'GET' })
    .validator((data: { requestId?: string }) => data)
-   .handler(async ({ data }) => {
+   .handler(async ({ data }): Promise<RankRequestRedirect> => {
       const id = parseLegacyRouteId(data.requestId);
-      if (!id) return { name: 'rankRequests' } as const;
+      if (!id) return { name: 'rankRequests' };
 
       const request = await optionalApiData(publicApi.ranking.rankingControllerGetRequestById({ id }));
-      if (!request) return { name: 'rankRequests' } as const;
+      if (!request) return { name: 'rankRequests' };
 
       const leaderboard = request.difficulties[0]?.leaderboard;
-      if (!leaderboard) return { name: 'map', id: request.map.id } as const;
+      if (!leaderboard) return { name: 'map', id: request.map.id };
 
-      return { name: 'mapDifficulty', id: request.map.id, leaderboardId: leaderboard.id } as const;
+      return { name: 'mapDifficulty', id: request.map.id, leaderboardId: leaderboard.id };
    });
 
 export const Route = createFileRoute('/ranking/request/$requestId')({

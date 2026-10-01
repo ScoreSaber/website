@@ -47,9 +47,9 @@ function SettingsPerksReplaysRoute() {
    );
 }
 
-async function loadScoreDetailEntry(id: number) {
+async function loadScoreDetailEntry(id: number): Promise<[number, ScoreControllerGetScoreResponse | null]> {
    const cached = cachedScoreDetails.get(id);
-   if (cached && cached.expiresAt > Date.now()) return [id, cached.score] as const;
+   if (cached && cached.expiresAt > Date.now()) return [id, cached.score];
    if (cached) cachedScoreDetails.delete(id);
 
    let pending = pendingScoreDetails.get(id);
@@ -70,5 +70,5 @@ async function loadScoreDetailEntry(id: number) {
    }
 
    const score = await pending;
-   return [id, score] as const;
+   return [id, score];
 }

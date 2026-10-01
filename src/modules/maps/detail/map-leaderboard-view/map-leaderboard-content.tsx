@@ -30,7 +30,7 @@ import { updateSearchParams } from '@/shared/url-state/update-search-params';
 
 type RankRequestStatus = RankRequest['approvalStatus'];
 
-const rankRequestStatusIcon: Record<RankRequestStatus, { icon: typeof FaCheck; className: string }> = {
+const rankRequestStatusIcon = {
    APPROVED: { icon: FaCheck, className: 'bg-status-success' },
    PENDING: { icon: FaHourglassHalf, className: 'bg-score-pp' },
    QUALIFIED: { icon: FaHourglassHalf, className: 'bg-score-pp' },

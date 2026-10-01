@@ -128,7 +128,7 @@ const readinessConfigByStatus = {
       coverClassName: 'ring-1 ring-border/80',
       badgeClassName: 'border-border/80 bg-secondary/90 text-muted-foreground'
    }
-} as const;
+};
 
 function VoteSummary({ label, up, down, neutral }: { label: string; up: number; down: number; neutral?: number }) {
    return (
@@ -152,7 +152,7 @@ function VoteSummary({ label, up, down, neutral }: { label: string; up: number; 
    );
 }
 
-const REQUEST_TYPE_ACCENT: Record<string, string> = {
+const REQUEST_TYPE_ACCENT = {
    RANK: 'bg-status-success',
    UNRANK: 'bg-destructive'
 };

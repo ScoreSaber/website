@@ -4,12 +4,11 @@ import { z } from 'zod';
 
 import { PLAYER_CONTROLLER_GET_PLAYER_SCORES_SORT } from '@/shared/api/generated/ApiParams';
 
-function firstSearchParamValue(value: unknown) {
-   return Array.isArray(value) ? value[0] : value;
-}
-
 export function searchParam<TSchema extends z.ZodType>(schema: TSchema) {
-   return z.preprocess(firstSearchParamValue, schema);
+   return z.preprocess((value) => {
+      const selected: unknown = Array.isArray(value) ? value[0] : value;
+      return selected;
+   }, schema);
 }
 
 export const optionalSearchParamString = searchParam(z.string().optional());
@@ -53,8 +52,7 @@ export function toInt64PathParam(value: string | number | bigint): string {
 
 export const ScoreEnum = z.enum(PLAYER_CONTROLLER_GET_PLAYER_SCORES_SORT);
 
-export function validateRequest<Output>(schema: z.ZodType<Output>, request: unknown) {
-   const result = schema.safeParse(request);
+export function requestOrNotFound<Output>(result: z.ZodSafeParseResult<Output>): Output {
    if (result.success) {
       return result.data;
    }

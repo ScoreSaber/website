@@ -59,7 +59,6 @@ function FadeInImageImpl({
    return (
       <div className={cn('relative isolate', fill ? 'absolute inset-0' : 'inline-flex')}>
          {!isLoaded && <Skeleton className={cn('absolute inset-0 -z-10', roundedClasses)} />}
-         {/* oxlint-disable-next-line nextjs/no-img-element */}
          <img
             {...props}
             alt={alt}

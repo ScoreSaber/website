@@ -28,12 +28,17 @@ interface ScoreHistoryProps {
 
 const PAGE_SIZE = 6;
 
-const OUTCOME_FILTERS = [
+type OutcomeFilter = {
+   value: ScoreControllerGetScoreHistoryOutcomes;
+   labelKey: 'score.historyFilterClears' | 'score.historyFilterRestarts' | 'score.historyFilterQuits' | 'score.historyFilterFails';
+};
+
+const OUTCOME_FILTERS: OutcomeFilter[] = [
    { value: 'CLEAR', labelKey: 'score.historyFilterClears' },
    { value: 'RESTART', labelKey: 'score.historyFilterRestarts' },
    { value: 'QUIT', labelKey: 'score.historyFilterQuits' },
    { value: 'FAIL', labelKey: 'score.historyFilterFails' }
-] as const satisfies readonly { value: ScoreControllerGetScoreHistoryOutcomes; labelKey: string }[];
+];
 
 const OUTCOME_STORAGE_KEY = 'score-history-outcome-filters';
 const outcomeFiltersSchema = z.array(z.enum(SCORE_CONTROLLER_GET_SCORE_HISTORY_OUTCOMES));

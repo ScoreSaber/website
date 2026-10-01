@@ -13,7 +13,7 @@ import {
 import { parseCountryRegionParam, type CountryRegionFilterValue } from '@/shared/country-region';
 import { mapFilterPreferences, rankingFilterPreferences, rankRequestFilterPreferences } from '@/shared/url-state/persisted-filter-preferences';
 import { usePersistedSearch } from '@/shared/url-state/persisted/use-persisted-search';
-import type { SearchParamsRecord, SearchParamValue } from '@/shared/url-state/search-params';
+import type { SearchParamsRecord } from '@/shared/url-state/search-params';
 import type { AppNavRoute } from '@/shell/nav-data';
 
 type MapsRouteSearch = SearchParamsRecord & {
@@ -86,12 +86,14 @@ export function NavLink({ route, ...props }: NavLinkProps) {
 }
 
 function parseMapsSearch(search: SearchParamsRecord): MapsRouteSearch {
+   const page = search.page;
+   const status = search.status;
    return {
-      page: typeof search.page === 'number' && search.page > 1 ? search.page : undefined,
+      page: typeof page === 'number' && page > 1 ? page : undefined,
       verified: search.verified === 'false' ? 'false' : undefined,
-      sortBy: isMapSortBy(search.sortBy) ? search.sortBy : undefined,
-      sortDirection: isMapSortDirection(search.sortDirection) ? search.sortDirection : undefined,
-      status: typeof search.status === 'string' ? search.status : undefined
+      sortBy: MAP_CONTROLLER_GET_MAP_LISTINGS_SORT_BY.find((sortBy) => sortBy === search.sortBy),
+      sortDirection: MAP_CONTROLLER_GET_MAP_LISTINGS_SORT_DIRECTION.find((direction) => direction === search.sortDirection),
+      status: typeof status === 'string' ? status : undefined
    };
 }
 
@@ -100,7 +102,7 @@ function parseRankingsSearch(search: SearchParamsRecord): RankingsRouteSearch {
       page: 1,
       includeInactive: search.includeInactive === 'true' || search.includeInactive === 'false' ? search.includeInactive : undefined,
       countries: parseCountryRegionParam(search.countries),
-      pivot: isRankingsPivot(search.pivot) ? search.pivot : undefined
+      pivot: PLAYER_CONTROLLER_GET_PLAYERS_PIVOT.find((pivot) => pivot === search.pivot)
    };
 }
 
@@ -109,16 +111,4 @@ function parseRankRequestsSearch(search: SearchParamsRecord): RankRequestsRouteS
       page: 1,
       hideDownvoted: search.hideDownvoted === true || search.hideDownvoted === 'true' ? true : undefined
    };
-}
-
-function isMapSortBy(value: SearchParamValue): value is MapsRouteSearch['sortBy'] {
-   return typeof value === 'string' && MAP_CONTROLLER_GET_MAP_LISTINGS_SORT_BY.some((sortBy) => sortBy === value);
-}
-
-function isMapSortDirection(value: SearchParamValue): value is MapsRouteSearch['sortDirection'] {
-   return typeof value === 'string' && MAP_CONTROLLER_GET_MAP_LISTINGS_SORT_DIRECTION.some((direction) => direction === value);
-}
-
-function isRankingsPivot(value: SearchParamValue): value is RankingsRouteSearch['pivot'] {
-   return typeof value === 'string' && PLAYER_CONTROLLER_GET_PLAYERS_PIVOT.some((pivot) => pivot === value);
 }

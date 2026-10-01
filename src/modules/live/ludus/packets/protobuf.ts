@@ -209,71 +209,52 @@ export type LudusChatMessage = {
 };
 
 type ProtoEnvelopeBody = ProtoLudusEnvelope['body'];
-type ProtoEnvelopeBodyCase = Exclude<ProtoEnvelopeBody['case'], undefined>;
-type ProtoEnvelopeBodyOf<Case extends ProtoEnvelopeBodyCase> = Extract<ProtoEnvelopeBody, { case: Case }>;
-type ProtoEnvelopeDecoder<Case extends ProtoEnvelopeBodyCase> = (value: ProtoEnvelopeBodyOf<Case>['value']) => LudusEnvelope;
-
 type ServerCommandDecoder = (command: ServerCommand) => LudusEnvelope;
 
-const unknownEnvelope = {
+const unknownEnvelope: LudusEnvelope = {
    type: 'UNKNOWN',
    label: 'unknown ludus frame'
-} satisfies LudusEnvelope;
-const unknownCommandEnvelope = {
+};
+const unknownCommandEnvelope: LudusEnvelope = {
    type: 'UNKNOWN',
    label: 'unknown ludus command'
-} satisfies LudusEnvelope;
-
-const envelopeDecoders: Partial<{
-   [Case in ProtoEnvelopeBodyCase]: ProtoEnvelopeDecoder<Case>;
-}> = {
-   connectAccepted: decodeConnectAcceptedEnvelope,
-   roomContextUpdated: decodeRoomContextUpdatedEnvelope,
-   serverCommand: decodeServerCommand,
-   roomSnapshot: decodeRoomSnapshotEnvelope,
-   streamSnapshot: decodeStreamSnapshotEnvelope,
-   reconnectRequested: decodeReconnectRequestedEnvelope,
-   error: decodeErrorEnvelope,
-   promptResponse: decodePromptResponseEnvelope,
-   chatMessage: decodeChatMessageEnvelope,
-   chatSnapshot: decodeChatSnapshotEnvelope
 };
 
-const serverCommandDecoders: Partial<Record<LudusCommandType, ServerCommandDecoder>> = {
-   [LudusCommandType.START_MAP]: decodeStartMapCommand,
-   [LudusCommandType.RETURN_TO_MENU]: decodeReturnToMenuCommand
-};
+const serverCommandDecoders = new Map<LudusCommandType, ServerCommandDecoder>([
+   [LudusCommandType.START_MAP, decodeStartMapCommand],
+   [LudusCommandType.RETURN_TO_MENU, decodeReturnToMenuCommand]
+]);
 
-const replayStreamStates: Partial<Record<ReplayStreamState, LudusReplayScore['streamState']>> = {
-   [ReplayStreamState.STARTING]: 'STARTING',
-   [ReplayStreamState.STREAMING]: 'LIVE',
-   [ReplayStreamState.DISCONNECTED]: 'DISCONNECTED',
-   [ReplayStreamState.RESUMING]: 'RESUMING',
-   [ReplayStreamState.ENDED]: 'ENDED',
-   [ReplayStreamState.FAILED]: 'FAILED'
-};
+const replayStreamStates = new Map<ReplayStreamState, LudusReplayScore['streamState']>([
+   [ReplayStreamState.STARTING, 'STARTING'],
+   [ReplayStreamState.STREAMING, 'LIVE'],
+   [ReplayStreamState.DISCONNECTED, 'DISCONNECTED'],
+   [ReplayStreamState.RESUMING, 'RESUMING'],
+   [ReplayStreamState.ENDED, 'ENDED'],
+   [ReplayStreamState.FAILED, 'FAILED']
+]);
 
-const playbackPolicies: Partial<Record<LivePlaybackPolicy, LudusPlaybackBuffer['policy']>> = {
-   [LivePlaybackPolicy.LOW_LATENCY]: 'LOW_LATENCY',
-   [LivePlaybackPolicy.SYNCED_ROOM]: 'SYNCED_ROOM'
-};
+const playbackPolicies = new Map<LivePlaybackPolicy, LudusPlaybackBuffer['policy']>([
+   [LivePlaybackPolicy.LOW_LATENCY, 'LOW_LATENCY'],
+   [LivePlaybackPolicy.SYNCED_ROOM, 'SYNCED_ROOM']
+]);
 
-const playStates: Partial<Record<LudusPlayState, LudusRoomPlayerState['playState']>> = {
-   [LudusPlayState.IN_MENUS]: 'IDLE',
-   [LudusPlayState.PAUSED]: 'PAUSED',
-   [LudusPlayState.IN_GAME]: 'PLAYING'
-};
+const playStates = new Map<LudusPlayState, LudusRoomPlayerState['playState']>([
+   [LudusPlayState.IN_MENUS, 'IDLE'],
+   [LudusPlayState.PAUSED, 'PAUSED'],
+   [LudusPlayState.IN_GAME, 'PLAYING']
+]);
 
-const readyStates: Partial<Record<LudusReadyState, LudusRoomPlayerState['readyState']>> = {
-   [LudusReadyState.READY]: 'READY',
-   [LudusReadyState.AFK]: 'AFK'
-};
+const readyStates = new Map<LudusReadyState, LudusRoomPlayerState['readyState']>([
+   [LudusReadyState.READY, 'READY'],
+   [LudusReadyState.AFK, 'AFK']
+]);
 
-const downloadStates: Partial<Record<LudusDownloadState, LudusRoomPlayerState['downloadState']>> = {
-   [LudusDownloadState.DOWNLOADING]: 'DOWNLOADING',
-   [LudusDownloadState.DOWNLOADED]: 'DOWNLOADED',
-   [LudusDownloadState.ERROR]: 'ERROR'
-};
+const downloadStates = new Map<LudusDownloadState, LudusRoomPlayerState['downloadState']>([
+   [LudusDownloadState.DOWNLOADING, 'DOWNLOADING'],
+   [LudusDownloadState.DOWNLOADED, 'DOWNLOADED'],
+   [LudusDownloadState.ERROR, 'ERROR']
+]);
 
 export function getLudusWebSocketUrl(baseUrl: string | null | undefined) {
    if (!baseUrl || !URL.canParse(baseUrl)) return null;
@@ -361,10 +342,30 @@ export function decodeLudusEnvelope(bytes: ArrayBuffer) {
 }
 
 function decodeEnvelopeBody(body: ProtoEnvelopeBody): LudusEnvelope {
-   if (!body.case) return unknownEnvelope;
-
-   const decoder = envelopeDecoders[body.case] as ProtoEnvelopeDecoder<typeof body.case> | undefined;
-   return decoder?.(body.value) ?? unknownEnvelope;
+   switch (body.case) {
+      case 'connectAccepted':
+         return decodeConnectAcceptedEnvelope(body.value);
+      case 'roomContextUpdated':
+         return decodeRoomContextUpdatedEnvelope(body.value);
+      case 'serverCommand':
+         return decodeServerCommand(body.value);
+      case 'roomSnapshot':
+         return decodeRoomSnapshotEnvelope(body.value);
+      case 'streamSnapshot':
+         return decodeStreamSnapshotEnvelope(body.value);
+      case 'reconnectRequested':
+         return decodeReconnectRequestedEnvelope(body.value);
+      case 'error':
+         return decodeErrorEnvelope(body.value);
+      case 'promptResponse':
+         return decodePromptResponseEnvelope(body.value);
+      case 'chatMessage':
+         return decodeChatMessageEnvelope(body.value);
+      case 'chatSnapshot':
+         return decodeChatSnapshotEnvelope(body.value);
+      default:
+         return unknownEnvelope;
+   }
 }
 
 function decodeConnectAcceptedEnvelope(value: ConnectAccepted): LudusEnvelope {
@@ -445,7 +446,7 @@ function decodeChatSnapshotEnvelope(value: LiveChatSnapshot): LudusEnvelope {
 }
 
 function decodeServerCommand(command: ServerCommand): LudusEnvelope {
-   return serverCommandDecoders[command.type]?.(command) ?? unknownCommandEnvelope;
+   return serverCommandDecoders.get(command.type)?.(command) ?? unknownCommandEnvelope;
 }
 
 function decodeStartMapCommand(command: ServerCommand): LudusEnvelope {
@@ -514,12 +515,17 @@ function decodeStreamSnapshot(snapshot: LiveTournamentStreamSnapshot): LudusStre
       tournamentId: snapshot.tournamentId,
       sequence: snapshot.sequence.toString(),
       serverTimeUnixMs: Number(snapshot.serverTimeUnixMs),
-      rooms: snapshot.rooms.map((room) => decodeRoomStreamSnapshot(room, receivedAtUnixMs))
+      rooms: snapshot.rooms.flatMap((room) => {
+         const decoded = decodeRoomStreamSnapshot(room, receivedAtUnixMs);
+         return decoded ? [decoded] : [];
+      })
    };
 }
 
-function decodeRoomStreamSnapshot(snapshot: LiveRoomStreamSnapshot, receivedAtUnixMs: number): LudusRoomStreamSnapshot {
-   const room = decodeRoomState(snapshot.room!);
+function decodeRoomStreamSnapshot(snapshot: LiveRoomStreamSnapshot, receivedAtUnixMs: number): LudusRoomStreamSnapshot | null {
+   if (!snapshot.room) return null;
+
+   const room = decodeRoomState(snapshot.room);
    return {
       room,
       scores: snapshot.replayStates.map((state) => decodeReplayState(room.matchId, state, receivedAtUnixMs)),
@@ -532,7 +538,7 @@ function decodePlaybackBuffer(buffer: LivePlaybackBuffer | undefined): LudusPlay
    if (!buffer) return null;
 
    return {
-      policy: playbackPolicies[buffer.policy] ?? 'UNKNOWN',
+      policy: playbackPolicies.get(buffer.policy) ?? 'UNKNOWN',
       recommendedDelayMs: buffer.recommendedDelayMs,
       minDelayMs: buffer.minDelayMs,
       maxDelayMs: buffer.maxDelayMs
@@ -559,7 +565,7 @@ function decodeReplayState(matchId: string, state: LiveRoomReplayState, received
 }
 
 function decodeReplayStreamState(state: ReplayStreamState): LudusReplayScore['streamState'] {
-   return replayStreamStates[state] ?? 'UNKNOWN';
+   return replayStreamStates.get(state) ?? 'UNKNOWN';
 }
 
 function getRoomPlayStatus(playerStates: LudusRoomPlayerState[]): LudusRoomPlayStatus {
@@ -568,15 +574,15 @@ function getRoomPlayStatus(playerStates: LudusRoomPlayerState[]): LudusRoomPlayS
 }
 
 function decodePlayState(state: LudusPlayState): LudusRoomPlayerState['playState'] {
-   return playStates[state] ?? 'IDLE';
+   return playStates.get(state) ?? 'IDLE';
 }
 
 function decodeReadyState(state: LudusReadyState): LudusRoomPlayerState['readyState'] {
-   return readyStates[state] ?? 'NOT_READY';
+   return readyStates.get(state) ?? 'NOT_READY';
 }
 
 function decodeDownloadState(state: LudusDownloadState): LudusRoomPlayerState['downloadState'] {
-   return downloadStates[state] ?? 'NONE';
+   return downloadStates.get(state) ?? 'NONE';
 }
 
 function decodePromptResponse(response: PromptResponse): LudusPromptResponse {

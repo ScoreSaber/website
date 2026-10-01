@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { Result } from 'better-result';
 
 import { readAuthCookie } from '@/modules/auth/actions/session.server';
+import type { AdminBadgeControllerUpdateBadgePayload } from '@/shared/api/generated/Api';
 import { api } from '@/shared/api/server-api';
 import { actionApiData, actionFailure, actionSuccess } from '@/shared/result/action';
 import { apiResult } from '@/shared/result/api';
@@ -40,15 +41,9 @@ const updateBadgeFn = createServerFn({ method: 'POST' })
       const form = readBadgeForm(data);
       if (!form.ok) return form;
 
-      return actionApiData(
-         api.adminBadge.adminBadgeControllerUpdateBadge(
-            { id: badgeId },
-            {
-               description: form.value.description,
-               ...(form.value.image ? { image: form.value.image } : {})
-            }
-         )
-      );
+      const payload: AdminBadgeControllerUpdateBadgePayload = { description: form.value.description };
+      if (form.value.image) payload.image = form.value.image;
+      return actionApiData(api.adminBadge.adminBadgeControllerUpdateBadge({ id: badgeId }, payload));
    });
 
 const deleteBadgeFn = createServerFn({ method: 'POST' })

@@ -13,7 +13,7 @@ export async function actionApiData<T>(promise: Promise<ApiResponse<T>>): Promis
    if (Result.isOk(result)) {
       return { ok: true, value: result.value.data };
    }
-   return actionError(result.error);
+   return actionFailure(result.error.message);
 }
 
 // unwrap for use in useMutation -- throws on error so react-query catches it
@@ -22,7 +22,7 @@ export function unwrapAction<T>(result: ActionResult<T>): T {
    return result.value;
 }
 
-export function actionSuccess<const T>(value: T): ActionResult<T> {
+export function actionSuccess<T>(value: T): ActionResult<T> {
    return { ok: true, value };
 }
 
@@ -31,15 +31,11 @@ export function actionFailure(error: string): ActionResult<never> {
 }
 
 // convenience for void actions that just need ok/error
-export async function actionResultVoid<T>(promise: Promise<T>): Promise<ActionResult<void>> {
+export async function actionResultVoid<T>(promise: Promise<T>): Promise<ActionResult> {
    const result = await apiResult(promise);
 
    if (Result.isOk(result)) {
       return { ok: true, value: undefined };
    }
-   return actionError(result.error);
-}
-
-function actionError(error: Error): ActionResult<never> {
-   return { ok: false, error: error.message };
+   return actionFailure(result.error.message);
 }

@@ -1,8 +1,7 @@
-import { formatCountryRegionParam, parseCountryRegionParam } from '@/shared/country-region';
+import { formatCountryRegionParam } from '@/shared/country-region';
+import type { SearchParamValue, SearchParamsRecord } from '@/shared/url-state/search-params';
 
-type SearchValue = string | number | boolean | null | undefined | readonly SearchValue[] | Record<string, unknown>;
-
-export function parseUrlSearch(searchStr: string): Record<string, string> {
+export function parseUrlSearch(searchStr: string) {
    const rawSearch = searchStr.startsWith('?') ? searchStr.slice(1) : searchStr;
    const searchParams = new URLSearchParams(rawSearch.replaceAll('?', '&'));
    const search: Record<string, string> = {};
@@ -14,7 +13,7 @@ export function parseUrlSearch(searchStr: string): Record<string, string> {
    return search;
 }
 
-export function stringifyUrlSearch(search: Record<string, SearchValue>) {
+export function stringifyUrlSearch(search: SearchParamsRecord) {
    const searchParams = new URLSearchParams();
 
    for (const [key, value] of Object.entries(search)) {
@@ -25,26 +24,19 @@ export function stringifyUrlSearch(search: Record<string, SearchValue>) {
    return next ? `?${next}` : '';
 }
 
-export function normalizeSearchRecord(search: Record<string, unknown>) {
-   const params: Record<string, string | string[] | undefined> = {};
+export function normalizeSearchRecord(search: SearchParamsRecord) {
+   const params: Record<string, string | undefined> = {};
 
    for (const [key, value] of Object.entries(search)) {
-      if (Array.isArray(value)) {
-         params[key] = value.length > 0 ? String(value[value.length - 1]) : undefined;
-      } else if (value != null) {
-         params[key] =
-            typeof value === 'object'
-               ? formatObjectSearchValue(value)
-               : typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint'
-                 ? String(value)
-                 : undefined;
-      }
+      const selected = Array.isArray(value) ? value.at(-1) : value;
+      if (selected == null) continue;
+      params[key] = typeof selected === 'object' ? formatCountryRegionParam(selected) : String(selected);
    }
 
    return params;
 }
 
-function appendSearchValue(searchParams: URLSearchParams, key: string, value: SearchValue) {
+function appendSearchValue(searchParams: URLSearchParams, key: string, value: SearchParamValue) {
    if (value == null || value === '') return;
    if (key === 'page' && value === 1) return;
 
@@ -55,10 +47,5 @@ function appendSearchValue(searchParams: URLSearchParams, key: string, value: Se
       return;
    }
 
-   searchParams.append(key, typeof value === 'object' ? formatObjectSearchValue(value) : String(value));
-}
-
-function formatObjectSearchValue(value: object) {
-   const countryRegion = parseCountryRegionParam(value);
-   return formatCountryRegionParam(countryRegion) ?? JSON.stringify(value);
+   searchParams.append(key, typeof value === 'object' ? (formatCountryRegionParam(value) ?? '') : String(value));
 }

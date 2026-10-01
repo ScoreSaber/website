@@ -3,11 +3,14 @@ export interface Messages {
 }
 
 export function mergeMessages(base: Messages, override: Messages): Messages {
-   return Object.fromEntries(
-      Object.entries(base).map(([key, value]) => {
-         const replacement = override[key];
-         if (typeof value === 'string') return [key, typeof replacement === 'string' && replacement.trim() ? replacement : value];
-         return [key, mergeMessages(value, typeof replacement === 'string' ? {} : (replacement ?? {}))];
-      })
-   );
+   const merged: Messages = {};
+   for (const [key, value] of Object.entries(base)) {
+      const replacement = override[key];
+      if (typeof value === 'string') {
+         merged[key] = typeof replacement === 'string' && replacement.trim() ? replacement : value;
+         continue;
+      }
+      merged[key] = mergeMessages(value, replacement && typeof replacement !== 'string' ? replacement : {});
+   }
+   return merged;
 }

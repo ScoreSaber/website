@@ -31,7 +31,7 @@ type HomeStat = {
 };
 
 // rough daily growth, used to pace each stat's "+1" ticker
-const statGrowthPerDay: Record<HomeStatKey, number> = {
+const statGrowthPerDay = {
    players: 500,
    scores: 30000,
    leaderboards: 100
@@ -40,7 +40,7 @@ const statGrowthPerDay: Record<HomeStatKey, number> = {
 export function HeroSection() {
    const t = useTranslations('home');
    const { user } = useAuth();
-   const stats = [
+   const stats: HomeStat[] = [
       {
          key: 'players',
          value: t('stats.playersValue'),
@@ -59,7 +59,7 @@ export function HeroSection() {
          label: t('stats.leaderboardsLabel'),
          avgGrowthPerDay: statGrowthPerDay.leaderboards
       }
-   ] satisfies HomeStat[];
+   ];
 
    return (
       <section className="relative z-10 px-4 pt-20 pb-12 sm:px-6 sm:pt-24 sm:pb-16 lg:px-10 lg:pb-14">

@@ -26,7 +26,7 @@ function loadPersistedSearchStorage(key: string): Record<string, string> {
 }
 
 function writePersistedSearchCookie(key: string, value: Record<string, string>) {
-   if (typeof document === 'undefined') return;
+   if (globalThis.document === undefined) return;
 
    document.cookie = `${getPersistedSearchCookieName(key)}=${serializePersistedSearchCookieValue(value)}; max-age=${PERSISTED_SEARCH_COOKIE_MAX_AGE}; path=/; samesite=lax`;
 }

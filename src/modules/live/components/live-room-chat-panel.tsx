@@ -83,15 +83,15 @@ export function LiveRoomChatPanel({ messages, disabled, className, onSendAction 
       async function resolveLogs() {
          const [resolvedPlayers, resolvedMaps] = await Promise.all([
             Promise.all(
-               [...playerIds].map(async (playerId) => {
+               [...playerIds].map(async (playerId): Promise<[string, string | null]> => {
                   const player = await optionalApiData(api.player.playerControllerGetPlayer({ id: playerId }));
-                  return [playerId, cleanDisplayName(player?.name || player?.playerNameInGame)] as const;
+                  return [playerId, cleanDisplayName(player?.name || player?.playerNameInGame)];
                })
             ),
             Promise.all(
-               [...mapHashes].map(async (hash) => {
+               [...mapHashes].map(async (hash): Promise<[string, string | null]> => {
                   const map = await optionalApiData(api.map.mapControllerGetMapByHash({ hash }));
-                  return [hash, map ? formatResolvedMapName(map) : null] as const;
+                  return [hash, map ? formatResolvedMapName(map) : null];
                })
             )
          ]);

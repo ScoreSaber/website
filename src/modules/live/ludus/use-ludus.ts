@@ -21,7 +21,7 @@ import {
 export type { LudusState } from '@/modules/live/ludus/packets';
 
 const socketErrorDelayMs = 750;
-const reconnectDelaysMs = [250, 500, 1000, 2000, 5000, 10000] as const;
+const reconnectDelaysMs = [250, 500, 1000, 2000, 5000, 10000];
 
 type UseLudusOptions = {
    enabled: boolean;
@@ -294,16 +294,15 @@ async function fetchLudusBrowserSession({
    const url = new URL('/api/v2/live/ludus/session', env.NEXT_PUBLIC_API_URL);
    const scopedBody = roomContext === 'TOURNAMENT' && tournamentId ? { tournamentId, clientType, targetMatchId } : null;
    const result = await Result.tryPromise(async () => {
-      const response = await fetch(url, {
+      const request: RequestInit = {
          method: 'POST',
-         credentials: 'include',
-         ...(scopedBody
-            ? {
-                 headers: { 'content-type': 'application/json' },
-                 body: JSON.stringify(scopedBody)
-              }
-            : {})
-      });
+         credentials: 'include'
+      };
+      if (scopedBody) {
+         request.headers = { 'content-type': 'application/json' };
+         request.body = JSON.stringify(scopedBody);
+      }
+      const response = await fetch(url, request);
       if (!response.ok) return null;
       return ludusBrowserSessionSchema.parse(await response.json());
    });

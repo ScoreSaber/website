@@ -36,6 +36,7 @@ import { PlayerRelationships } from '@/modules/player/profile/player-relationshi
 import { PlayerAvatar } from '@/modules/player/shared/player-avatar';
 import { PlayerLink } from '@/modules/player/shared/player-link';
 import { WeeklyRankChange } from '@/modules/player/shared/weekly-rank-change';
+import type { UserControllerUpdateProfileCustomizationPayload } from '@/shared/api/generated/Api';
 import type { PlayerAliasControllerGetAliasesItem, PlayerControllerGetPlayerResponse } from '@/shared/api/generated/ApiParams';
 import { CountryImage } from '@/shared/components/country-image';
 import { DeviceDisplay } from '@/shared/components/device-display';
@@ -58,7 +59,9 @@ const rankPillAccentClass = cn(
    'bg-[color:color-mix(in_srgb,var(--profile-accent)_9%,transparent)] hover:bg-[color:color-mix(in_srgb,var(--profile-accent)_16%,transparent)]'
 );
 
-export const PLAYER_PROFILE_STAT_IDS = [
+export type PlayerProfileStatId = NonNullable<UserControllerUpdateProfileCustomizationPayload['statOrder']>[number];
+
+export const PLAYER_PROFILE_STAT_IDS: PlayerProfileStatId[] = [
    'rankedPlays',
    'rankedScore',
    'rankedAcc',
@@ -68,9 +71,7 @@ export const PLAYER_PROFILE_STAT_IDS = [
    'joined',
    'replayViews',
    'role'
-] as const;
-
-export type PlayerProfileStatId = (typeof PLAYER_PROFILE_STAT_IDS)[number];
+];
 
 interface ProfileStatItem {
    id: PlayerProfileStatId;
@@ -123,20 +124,18 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
          label: t('player.rankedAcc'),
          value: formatAccuracy(stats.averageAccuracy),
          primary: true
-      },
-      ...(plusOneRawPP != null
-         ? [
-              {
-                 id: 'plusOnePP' as const,
-                 icon: FaStar,
-                 label: t('player.plusOnePP'),
-                 value: `${formatPP(plusOneRawPP)}pp`,
-                 primary: true,
-                 tooltip: t('player.plusOnePPHint')
-              }
-           ]
-         : [])
+      }
    ];
+   if (plusOneRawPP != null) {
+      primaryStatItems.push({
+         id: 'plusOnePP',
+         icon: FaStar,
+         label: t('player.plusOnePP'),
+         value: `${formatPP(plusOneRawPP)}pp`,
+         primary: true,
+         tooltip: t('player.plusOnePPHint')
+      });
+   }
    const secondaryStatItems: ProfileStatItem[] = [
       {
          id: 'totalPlays',
@@ -161,18 +160,16 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
          icon: FaEye,
          label: t('player.replayViews'),
          value: formatNumber(stats.totalReplayViews)
-      },
-      ...(playerSummary.hasSpecialRole
-         ? [
-              {
-                 id: 'role' as const,
-                 icon: FaShieldAlt,
-                 label: t('player.role'),
-                 value: player.role ? normalizePlayerRoleText(player.role) : playerSummary.roleTitle!
-              }
-           ]
-         : [])
+      }
    ];
+   if (playerSummary.hasSpecialRole) {
+      secondaryStatItems.push({
+         id: 'role',
+         icon: FaShieldAlt,
+         label: t('player.role'),
+         value: player.role ? normalizePlayerRoleText(player.role) : playerSummary.roleTitle
+      });
+   }
    const statsById = new Map([...primaryStatItems, ...secondaryStatItems].map((item) => [item.id, item]));
    const customizedStatOrder = customization?.statOrder ?? (customization?.enabledStatIds ? [...PLAYER_PROFILE_STAT_IDS] : null);
    const orderedCustomizedStats = customizedStatOrder ? getOrderedProfileStats(customizedStatOrder, statsById) : null;

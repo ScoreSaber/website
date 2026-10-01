@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import { Children, type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 
 const FLICKER_MIN_DELAY_MS = 50;
 const FLICKER_MAX_DELAY_MS = 400;
@@ -30,6 +30,14 @@ export function ScoreSaberBrand({ children }: { children: ReactNode }) {
          </span>
       </span>
    );
+}
+
+function getSingleTextChild(children: ReactNode) {
+   const childArray = Children.toArray(children);
+   if (childArray.length !== 1) return null;
+
+   const child = childArray[0];
+   return typeof child === 'string' ? child : null;
 }
 
 function useNeonFlicker() {
@@ -96,18 +104,6 @@ function useNeonFlicker() {
    return { letterOn, sparks };
 }
 
-function getSingleTextChild(children: ReactNode) {
-   if (typeof children === 'string') {
-      return children;
-   }
-
-   if (Array.isArray(children) && children.length === 1 && typeof children[0] === 'string') {
-      return children[0];
-   }
-
-   return null;
-}
-
 function renderBrandText(text: string, letterOn: boolean, sparks: NeonSpark[]) {
    const lowerText = text.toLowerCase();
    const firstEIndex = lowerText.indexOf('e');
@@ -123,23 +119,26 @@ function renderBrandText(text: string, letterOn: boolean, sparks: NeonSpark[]) {
          <span className="home-brand-flicker-anchor">
             <span className={`home-brand-flicker-letter${letterOn ? '' : ' is-off'}`}>{text.charAt(flickerIndex)}</span>
             <span className="home-brand-sparks" aria-hidden>
-               {sparks.map((spark) => (
-                  <span
-                     key={spark.id}
-                     className="home-brand-spark"
-                     style={
-                        {
-                           '--spark-x': `${spark.x}%`,
-                           '--spark-y': `${spark.y}%`,
-                           '--spark-size': `${spark.size}px`,
-                           '--spark-angle': `${spark.angle}deg`,
-                           '--spark-distance': `${spark.distance}px`,
-                           '--spark-delay': `${spark.delay}ms`,
-                           '--spark-duration': `${spark.duration}ms`
-                        } as CSSProperties
-                     }
-                  />
-               ))}
+               {sparks.map((spark) => {
+                  const style: CSSProperties & {
+                     '--spark-x': string;
+                     '--spark-y': string;
+                     '--spark-size': string;
+                     '--spark-angle': string;
+                     '--spark-distance': string;
+                     '--spark-delay': string;
+                     '--spark-duration': string;
+                  } = {
+                     '--spark-x': `${spark.x}%`,
+                     '--spark-y': `${spark.y}%`,
+                     '--spark-size': `${spark.size}px`,
+                     '--spark-angle': `${spark.angle}deg`,
+                     '--spark-distance': `${spark.distance}px`,
+                     '--spark-delay': `${spark.delay}ms`,
+                     '--spark-duration': `${spark.duration}ms`
+                  };
+                  return <span key={spark.id} className="home-brand-spark" style={style} />;
+               })}
             </span>
          </span>
          {text.slice(flickerIndex + 1)}

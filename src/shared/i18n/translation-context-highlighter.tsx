@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-export type TranslationMessages = Record<string, unknown>;
+import type { Messages } from '@/shared/i18n/messages';
 
 const contextParam = 'ssctx';
 const viewportParam = 'ssctxViewport';
@@ -18,7 +18,7 @@ const skippedSelectors = [
    'style'
 ].join(',');
 
-export function TranslationContextHighlighter({ messages }: { messages: TranslationMessages }) {
+export function TranslationContextHighlighter({ messages }: { messages: Messages }) {
    const [mobilePreviewUrl, setMobilePreviewUrl] = useState<string | null>(null);
 
    useEffect(() => {
@@ -84,8 +84,14 @@ export function TranslationContextHighlighter({ messages }: { messages: Translat
    ) : null;
 }
 
-function getMessage(messages: TranslationMessages, key: string) {
-   const value = key.split('.').reduce<unknown>((current, segment) => current && (current as TranslationMessages)[segment], messages);
+function getMessage(messages: Messages, key: string) {
+   let value: string | Messages = messages;
+   for (const segment of key.split('.')) {
+      if (typeof value === 'string') return null;
+      const next: string | Messages | undefined = value[segment];
+      if (next === undefined) return null;
+      value = next;
+   }
 
    return typeof value === 'string' ? value : null;
 }

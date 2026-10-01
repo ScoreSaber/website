@@ -1,8 +1,10 @@
 // credits: @TahaSh, original svelte-paginate
 
-const PREVIOUS_PAGE = 'PREVIOUS_PAGE';
-const NEXT_PAGE = 'NEXT_PAGE';
-const ELLIPSIS = 'ELLIPSIS';
+type PaginationSymbol = 'PREVIOUS_PAGE' | 'NEXT_PAGE' | 'ELLIPSIS';
+
+const PREVIOUS_PAGE: PaginationSymbol = 'PREVIOUS_PAGE';
+const NEXT_PAGE: PaginationSymbol = 'NEXT_PAGE';
+const ELLIPSIS: PaginationSymbol = 'ELLIPSIS';
 
 type PaginationInfo = {
    totalItems: number;
@@ -12,11 +14,7 @@ type PaginationInfo = {
    showStepOptions: boolean;
 };
 
-type PaginationOptions = {
-   type: 'number' | 'symbol';
-   value?: number;
-   symbol?: string;
-};
+type PaginationOptions = { type: 'number'; value: number } | { type: 'symbol'; value: number; symbol: PaginationSymbol };
 
 export function generateNavigationOptions(info: PaginationInfo) {
    const totalPages = Math.ceil(info.totalItems / info.pageSize);
@@ -96,7 +94,7 @@ function generateLimitedOptions(totalPages: number, { limit, currentPage }: Pagi
    return options;
 }
 
-function addStepOptions(options: PaginationOptions[], currentPage: number, totalPages: number) {
+function addStepOptions(options: PaginationOptions[], currentPage: number, totalPages: number): PaginationOptions[] {
    if (options.length === 0) return options;
 
    return [

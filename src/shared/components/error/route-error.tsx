@@ -3,6 +3,7 @@
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { getRouteApi, useRouter } from '@tanstack/react-router';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+import { z } from 'zod';
 
 import messages from '../../../../messages/en.json';
 
@@ -13,10 +14,12 @@ import { ErrorCard } from '@/shared/components/error/error-card';
 const errorMessages = messages.error;
 const commonMessages = messages.common;
 const homeRoute = getRouteApi('/');
+const errorDigestSchema = z.object({ digest: z.string() });
 
 export function RouteError({ error, reset }: ErrorComponentProps) {
    const router = useRouter();
-   const digest = 'digest' in error && typeof error.digest === 'string' ? error.digest : null;
+   const parsedError = errorDigestSchema.safeParse(error);
+   const digest = parsedError.success ? parsedError.data.digest : null;
 
    function handleRetry() {
       reset();

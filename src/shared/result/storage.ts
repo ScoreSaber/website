@@ -1,4 +1,4 @@
-import { Err, Ok, Result, TaggedError } from 'better-result';
+import { Err, Result, TaggedError } from 'better-result';
 import { z } from 'zod';
 
 type JsonPrimitive = string | number | boolean | null;
@@ -23,12 +23,10 @@ class JsonSerializeError extends TaggedError('JsonSerializeError')<{
    cause: unknown;
 }>() {}
 
-type StorageResult<T, E> = Ok<T, E> | Err<T, E>;
-
-export function readStorageValue(key: string): StorageResult<string | null, StorageAccessError> {
+export function readStorageValue(key: string): Result<string | null, StorageAccessError> {
    return Result.try({
       try: () => localStorage.getItem(key),
-      catch: (cause: unknown) =>
+      catch: (cause) =>
          new StorageAccessError({
             message: `failed to read localStorage key "${key}"`,
             key,
@@ -38,12 +36,12 @@ export function readStorageValue(key: string): StorageResult<string | null, Stor
    });
 }
 
-export function writeStorageValue(key: string, value: string): StorageResult<void, StorageAccessError> {
+export function writeStorageValue(key: string, value: string): Result<void, StorageAccessError> {
    return Result.try({
       try: () => {
          localStorage.setItem(key, value);
       },
-      catch: (cause: unknown) =>
+      catch: (cause) =>
          new StorageAccessError({
             message: `failed to write localStorage key "${key}"`,
             key,
@@ -53,12 +51,12 @@ export function writeStorageValue(key: string, value: string): StorageResult<voi
    });
 }
 
-export function removeStorageValue(key: string): StorageResult<void, StorageAccessError> {
+export function removeStorageValue(key: string): Result<void, StorageAccessError> {
    return Result.try({
       try: () => {
          localStorage.removeItem(key);
       },
-      catch: (cause: unknown) =>
+      catch: (cause) =>
          new StorageAccessError({
             message: `failed to remove localStorage key "${key}"`,
             key,
@@ -68,10 +66,10 @@ export function removeStorageValue(key: string): StorageResult<void, StorageAcce
    });
 }
 
-function parseJsonValue<T>(value: string, schema: z.ZodType<T>, source: string): StorageResult<T, JsonParseError> {
+function parseJsonValue<T>(value: string, schema: z.ZodType<T>, source: string): Result<T, JsonParseError> {
    const parsed = Result.try({
-      try: () => JSON.parse(value),
-      catch: (cause: unknown) =>
+      try: () => schema.safeParse(JSON.parse(value)),
+      catch: (cause) =>
          new JsonParseError({
             message: `failed to parse json from ${source}`,
             source,
@@ -80,29 +78,25 @@ function parseJsonValue<T>(value: string, schema: z.ZodType<T>, source: string):
    });
 
    if (Result.isError(parsed)) return new Err(parsed.error);
+   if (parsed.value.success) return Result.ok(parsed.value.data);
 
-   const validated = schema.safeParse(parsed.value);
-   if (!validated.success) {
-      return new Err(
-         new JsonParseError({
-            message: `failed to parse json from ${source}`,
-            source,
-            cause: validated.error
-         })
-      );
-   }
-
-   return Result.ok(validated.data);
+   return new Err(
+      new JsonParseError({
+         message: `failed to parse json from ${source}`,
+         source,
+         cause: parsed.value.error
+      })
+   );
 }
 
-function stringifyJsonValue(value: JsonValue, source: string): StorageResult<string, JsonSerializeError> {
+function stringifyJsonValue(value: JsonValue, source: string): Result<string, JsonSerializeError> {
    return Result.try({
       try: () => {
          const serialized = JSON.stringify(value);
          if (serialized == null) throw new TypeError('json serialization returned no value');
          return serialized;
       },
-      catch: (cause: unknown) =>
+      catch: (cause) =>
          new JsonSerializeError({
             message: `failed to serialize json for ${source}`,
             source,
@@ -111,7 +105,7 @@ function stringifyJsonValue(value: JsonValue, source: string): StorageResult<str
    });
 }
 
-export function readStorageJson<T>(key: string, schema: z.ZodType<T>): StorageResult<T | null, StorageAccessError | JsonParseError> {
+export function readStorageJson<T>(key: string, schema: z.ZodType<T>): Result<T | null, StorageAccessError | JsonParseError> {
    return Result.gen(function* () {
       const raw = yield* readStorageValue(key);
 
@@ -124,7 +118,7 @@ export function readStorageJson<T>(key: string, schema: z.ZodType<T>): StorageRe
    });
 }
 
-export function writeStorageJson(key: string, value: JsonValue): StorageResult<void, StorageAccessError | JsonSerializeError> {
+export function writeStorageJson(key: string, value: JsonValue): Result<void, StorageAccessError | JsonSerializeError> {
    return Result.gen(function* () {
       const serialized = yield* stringifyJsonValue(value, `localStorage key "${key}"`);
       yield* writeStorageValue(key, serialized);

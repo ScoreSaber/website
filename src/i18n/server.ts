@@ -27,7 +27,7 @@ type AcceptedLocale = {
 
 const MIN_AUTO_LOCALE_COMPLETION = 0.35;
 
-const localeMessages: Record<Locale, Messages> = {
+const localeMessages = {
    en: enMessages,
    'de-DE': deDeMessages,
    'ja-JP': jaJpMessages,
@@ -47,9 +47,9 @@ const localeMessages: Record<Locale, Messages> = {
 };
 
 const totalMessageCount = countMessages(enMessages);
-const localeCompletion = Object.fromEntries(
+const localeCompletion = new Map(
    locales.map((locale) => [locale, locale === defaultLocale ? 1 : countTranslatedMessages(enMessages, localeMessages[locale]) / totalMessageCount])
-) as Record<Locale, number>;
+);
 
 export async function getLocale(): Promise<Locale> {
    const cookieLocale = getCookie('locale');
@@ -74,7 +74,7 @@ function hasMessages(value: string | Messages): boolean {
 function getAcceptedLocale(header: string | null): Locale | null {
    for (const { value } of parseAcceptedLocales(header)) {
       const locale = matchLocale(value);
-      if (locale && localeCompletion[locale] >= MIN_AUTO_LOCALE_COMPLETION) return locale;
+      if (locale && (localeCompletion.get(locale) ?? 0) >= MIN_AUTO_LOCALE_COMPLETION) return locale;
    }
 
    return null;

@@ -40,8 +40,8 @@ export function Time({
    dateStyle,
    className,
    longRelativeClassName,
-   shortFitTargetLength,
-   minShortFitScale
+   shortFitTargetLength = LONG_SHORT_TIME_LENGTH,
+   minShortFitScale = MIN_SHORT_TIME_SCALE
 }: TimeProps) {
    const dateObj = date == null ? null : new Date(date);
    const locale = useLocale();
@@ -74,7 +74,10 @@ export function Time({
    const displayText = timeAgo(dateObj, short, formatters, t('justNow'));
    const canFitShortTime = short && !!longRelativeClassName;
    const longShortTimeClassName = canFitShortTime && displayText.length > LONG_SHORT_TIME_LENGTH ? longRelativeClassName : undefined;
-   const shortTimeStyle = getShortTimeStyle(displayText, canFitShortTime, shortFitTargetLength, minShortFitScale);
+   const shortTimeStyle: (CSSProperties & { '--short-time-font-size': string }) | undefined =
+      canFitShortTime && displayText.length > shortFitTargetLength
+         ? { '--short-time-font-size': `${Math.max(minShortFitScale, shortFitTargetLength / displayText.length)}em` }
+         : undefined;
 
    return (
       <Tooltip>
@@ -92,13 +95,6 @@ export function Time({
          </TooltipContent>
       </Tooltip>
    );
-}
-
-function getShortTimeStyle(text: string, enabled: boolean, targetLength = LONG_SHORT_TIME_LENGTH, minScale = MIN_SHORT_TIME_SCALE) {
-   if (!enabled || text.length <= targetLength) return undefined;
-
-   const scale = Math.max(minScale, targetLength / text.length);
-   return { '--short-time-font-size': `${scale}em` } as CSSProperties;
 }
 
 function timeAgo(date: Date, isShort: boolean, formatters: TimeFormatters, justNow: string) {

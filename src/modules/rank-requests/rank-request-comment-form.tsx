@@ -13,7 +13,7 @@ import { CommentForm, type CommentFormAction } from '@/shared/components/comment
 type CommentGroup = 'RT' | 'QAT';
 
 const COMMENT_GROUP_STORAGE_KEY = 'rank-request-comment-group';
-const COMMENT_GROUP_TEXTAREA_CLASS: Record<CommentGroup, string> = {
+const COMMENT_GROUP_TEXTAREA_CLASS = {
    RT: 'border-role-rt focus-visible:border-role-rt focus-visible:ring-role-rt/30',
    QAT: 'border-role-qat focus-visible:border-role-qat focus-visible:ring-role-qat/30'
 };

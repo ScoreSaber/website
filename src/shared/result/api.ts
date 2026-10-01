@@ -1,5 +1,5 @@
 import { notFound } from '@tanstack/react-router';
-import { Err, matchError, Ok, Result, TaggedError } from 'better-result';
+import { matchError, Result, TaggedError } from 'better-result';
 import { z } from 'zod';
 
 const optionalApiErrorString = z.string().optional().catch(undefined);
@@ -16,18 +16,17 @@ class ApiNotFoundError extends TaggedError('ApiNotFoundError')<{
    cause: unknown;
 }>() {}
 
-class ApiRequestError extends TaggedError('ApiRequestError')<{
+export class ApiRequestError extends TaggedError('ApiRequestError')<{
    message: string;
    status: number | null;
    cause: unknown;
 }>() {}
 
 type ApiError = ApiNotFoundError | ApiRequestError;
-type ApiResult<T> = Ok<T, ApiError> | Err<T, ApiError>;
 type ApiResponse<T> = { data: T };
 type PageDataResult<T> = { ok: true; data: T } | { ok: false; status: number | null; message: string };
 
-export function apiResult<T>(promise: Promise<T>): Promise<ApiResult<T>> {
+export function apiResult<T>(promise: Promise<T>): Promise<Result<T, ApiError>> {
    return Result.tryPromise({
       try: () => promise,
       catch: toApiError

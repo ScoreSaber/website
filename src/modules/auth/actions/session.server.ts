@@ -37,14 +37,15 @@ function getAuthCookieOptions(): AuthCookieOptions {
    const currentHost = getRequestHeaders().get('host')?.split(':')[0] ?? new URL(env.NEXT_PUBLIC_SITE_URL).hostname;
    const domain = getSiteAuthCookieDomain(currentHost);
 
-   return {
+   const options: AuthCookieOptions = {
       httpOnly: true,
       sameSite: 'lax',
       secure: env.NODE_ENV === 'production',
       path: '/',
-      maxAge: siteAuthCookieMaxAge,
-      ...(domain ? { domain } : {})
+      maxAge: siteAuthCookieMaxAge
    };
+   if (domain) options.domain = domain;
+   return options;
 }
 
 function clearHostAuthCookie() {

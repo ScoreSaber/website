@@ -8,60 +8,60 @@ export const CARD_GRADIENT_CLASSES =
    'relative overflow-hidden rounded border bg-card dark:bg-linear-to-br dark:from-card dark:via-card/95 dark:to-card/90';
 export const BLURRED_BG_IMAGE_CLASSES = 'object-cover w-full h-full blur-2xl scale-110';
 
-const DIFFICULTY_BG_CLASS: Record<number, string> = {
-   1: 'bg-difficulty-easy',
-   3: 'bg-difficulty-normal',
-   5: 'bg-difficulty-hard',
-   7: 'bg-difficulty-expert',
-   9: 'bg-difficulty-expert-plus'
-};
+const DIFFICULTY_BG_CLASS = new Map([
+   [1, 'bg-difficulty-easy'],
+   [3, 'bg-difficulty-normal'],
+   [5, 'bg-difficulty-hard'],
+   [7, 'bg-difficulty-expert'],
+   [9, 'bg-difficulty-expert-plus']
+]);
 
-const DIFFICULTY_TEXT_CLASS: Record<number, string> = {
-   1: 'text-difficulty-easy',
-   3: 'text-difficulty-normal',
-   5: 'text-difficulty-hard',
-   7: 'text-difficulty-expert',
-   9: 'text-difficulty-expert-plus'
-};
+const DIFFICULTY_TEXT_CLASS = new Map([
+   [1, 'text-difficulty-easy'],
+   [3, 'text-difficulty-normal'],
+   [5, 'text-difficulty-hard'],
+   [7, 'text-difficulty-expert'],
+   [9, 'text-difficulty-expert-plus']
+]);
 
-const DIFFICULTY_TINT_CLASS: Record<number, string> = {
-   1: 'border-difficulty-easy/40 bg-difficulty-easy/10',
-   3: 'border-difficulty-normal/40 bg-difficulty-normal/10',
-   5: 'border-difficulty-hard/40 bg-difficulty-hard/10',
-   7: 'border-difficulty-expert/40 bg-difficulty-expert/10',
-   9: 'border-difficulty-expert-plus/40 bg-difficulty-expert-plus/10'
-};
+const DIFFICULTY_TINT_CLASS = new Map([
+   [1, 'border-difficulty-easy/40 bg-difficulty-easy/10'],
+   [3, 'border-difficulty-normal/40 bg-difficulty-normal/10'],
+   [5, 'border-difficulty-hard/40 bg-difficulty-hard/10'],
+   [7, 'border-difficulty-expert/40 bg-difficulty-expert/10'],
+   [9, 'border-difficulty-expert-plus/40 bg-difficulty-expert-plus/10']
+]);
 
-const STATUS_ACCENT_CLASS: Partial<Record<LeaderboardStatus, string>> = {
-   RANKED: 'bg-status-success',
-   QUALIFIED: 'bg-chart-primary',
-   LOVED: 'bg-difficulty-expert-plus'
-};
+const STATUS_ACCENT_CLASS = new Map<LeaderboardStatus, string>([
+   ['RANKED', 'bg-status-success'],
+   ['QUALIFIED', 'bg-chart-primary'],
+   ['LOVED', 'bg-difficulty-expert-plus']
+]);
 
-const STATUS_LABEL: Partial<Record<LeaderboardStatus, string>> = {
-   RANKED: 'Ranked',
-   QUALIFIED: 'Qualified',
-   LOVED: 'Loved'
-};
+const STATUS_LABEL = new Map<LeaderboardStatus, string>([
+   ['RANKED', 'Ranked'],
+   ['QUALIFIED', 'Qualified'],
+   ['LOVED', 'Loved']
+]);
 
 export function getDifficultyBgClass(difficulty: number) {
-   return DIFFICULTY_BG_CLASS[difficulty] ?? 'bg-muted';
+   return DIFFICULTY_BG_CLASS.get(difficulty) ?? 'bg-muted';
 }
 
 export function getDifficultyTextClass(difficulty: number) {
-   return DIFFICULTY_TEXT_CLASS[difficulty] ?? 'text-muted-foreground';
+   return DIFFICULTY_TEXT_CLASS.get(difficulty) ?? 'text-muted-foreground';
 }
 
 export function getDifficultyTintClass(difficulty: number) {
-   return DIFFICULTY_TINT_CLASS[difficulty] ?? 'border bg-secondary/35';
+   return DIFFICULTY_TINT_CLASS.get(difficulty) ?? 'border bg-secondary/35';
 }
 
 export function getStatusAccentClass(status: LeaderboardStatus) {
-   return STATUS_ACCENT_CLASS[status] ?? 'bg-muted';
+   return STATUS_ACCENT_CLASS.get(status) ?? 'bg-muted';
 }
 
 export function getStatusLabel(status: LeaderboardStatus) {
-   return STATUS_LABEL[status] ?? 'Unranked';
+   return STATUS_LABEL.get(status) ?? 'Unranked';
 }
 
 export function isLeaderboardRanked(leaderboard: { realm: { leaderboardStatus: LeaderboardStatus } }) {
@@ -83,7 +83,7 @@ type RolePrefix = 'text' | 'bg';
 
 type RoleKey = 'owner' | 'admin' | 'qat-head' | 'nat' | 'rt' | 'rtr' | 'qat' | 'cat' | 'ppv3' | 'dev' | 'cct' | 'supporter' | 'default';
 
-const ROLE_CLASS_MAP: Record<RolePrefix, Record<RoleKey, string>> = {
+const ROLE_CLASS_MAP = {
    text: {
       owner: 'text-role-owner',
       admin: 'text-role-admin',
@@ -116,15 +116,15 @@ const ROLE_CLASS_MAP: Record<RolePrefix, Record<RoleKey, string>> = {
    }
 };
 
-const PLAYER_OVERRIDE_CLASS_MAP: Record<RolePrefix, Record<string, string>> = {
-   text: {
-      '76561198041178440': 'team-rainbow-text', // qwasyx
-      '76561198182060577': 'team-rainbow-text' // williums
-   },
-   bg: {
-      '76561198041178440': 'bg-role-admin', // qwasyx
-      '76561198182060577': 'bg-role-default' // williums
-   }
+const PLAYER_OVERRIDE_CLASS_MAP = {
+   text: new Map([
+      ['76561198041178440', 'team-rainbow-text'], // qwasyx
+      ['76561198182060577', 'team-rainbow-text'] // williums
+   ]),
+   bg: new Map([
+      ['76561198041178440', 'bg-role-admin'], // qwasyx
+      ['76561198182060577', 'bg-role-default'] // williums
+   ])
 };
 
 const ROLE_TEXT_PRIORITY: { key: RoleKey; title: string; labels: string[] }[] = [
@@ -215,7 +215,7 @@ export function getPlayerRoleStyleAndTitle(player: PlayerRoleSource | null, pref
    }
 
    const [roleKey, title] = resolvePlayerRole(player);
-   var clsName = PLAYER_OVERRIDE_CLASS_MAP[prefix][player.id] ?? ROLE_CLASS_MAP[prefix][roleKey];
+   const clsName = PLAYER_OVERRIDE_CLASS_MAP[prefix].get(player.id) ?? ROLE_CLASS_MAP[prefix][roleKey];
 
    return [clsName, title];
 }

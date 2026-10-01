@@ -12,12 +12,12 @@ import { Comment } from '@/shared/components/comments/comment';
 import { cn } from '@/shared/format/helpers';
 import Permissions from '@/shared/permissions';
 
-const COMMENT_GROUP_BADGE_CLASS: Record<'RT' | 'QAT', string> = {
+const COMMENT_GROUP_BADGE_CLASS = {
    RT: 'bg-role-rt/15 text-role-rt',
    QAT: 'bg-role-qat/15 text-role-qat'
 };
 
-const COMMENT_GROUP_ACCENT_CLASS: Record<'RT' | 'QAT', string> = {
+const COMMENT_GROUP_ACCENT_CLASS = {
    RT: 'border-l-role-rt',
    QAT: 'border-l-role-qat'
 };

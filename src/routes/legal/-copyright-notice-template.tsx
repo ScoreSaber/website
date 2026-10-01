@@ -55,7 +55,7 @@ const noticeTemplateFields = [
       label: 'Signature',
       placeholder: '[typed full legal name or electronic signature]'
    }
-] as const;
+];
 
 const noticeTemplateHtml = `
 <ul>
@@ -66,7 +66,7 @@ ${noticeTemplateFields.map((field) => `<li><strong>${field.label}:</strong> ${fi
 const noticeTemplateText = noticeTemplateFields.map((field) => `- ${field.label}:\n  ${field.placeholder}`).join('\n');
 
 function getNoticeTemplateWriter() {
-   if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+   if (globalThis.ClipboardItem !== undefined && navigator.clipboard?.write) {
       const html = new Blob([noticeTemplateHtml], { type: 'text/html' });
       const text = new Blob([noticeTemplateText], { type: 'text/plain' });
 

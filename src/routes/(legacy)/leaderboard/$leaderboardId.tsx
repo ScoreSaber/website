@@ -1,26 +1,36 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
+import { z } from 'zod';
 
-import { legacyLeaderboardSearchParams, parseLegacyRouteId, type LegacyLeaderboardQuery } from '../-redirects';
+import { legacyLeaderboardQuery, parseLegacyRouteId } from '../-redirects';
 
 import { publicApi } from '@/shared/api/server-api';
 import { optionalApiData } from '@/shared/result/api';
 
+const legacyLeaderboardRedirectInputSchema = z.object({
+   leaderboardId: z.string().optional(),
+   search: legacyLeaderboardQuery
+});
+
+type LegacyLeaderboardRedirect =
+   | { name: 'maps' }
+   | { name: 'mapDifficulty'; id: number; leaderboardId: number; search: z.output<typeof legacyLeaderboardQuery> };
+
 const getLegacyLeaderboardRedirect = createServerFn({ method: 'GET' })
-   .validator((data: { leaderboardId?: string; search: LegacyLeaderboardQuery }) => data)
-   .handler(async ({ data }) => {
+   .validator((data) => legacyLeaderboardRedirectInputSchema.parse(data))
+   .handler(async ({ data }): Promise<LegacyLeaderboardRedirect> => {
       const id = parseLegacyRouteId(data.leaderboardId);
-      if (!id) return { name: 'maps' } as const;
+      if (!id) return { name: 'maps' };
 
       const leaderboard = await optionalApiData(publicApi.leaderboard.leaderboardControllerGetLeaderboardById({ id }));
-      if (!leaderboard) return { name: 'maps' } as const;
+      if (!leaderboard) return { name: 'maps' };
 
       return {
          name: 'mapDifficulty',
          id: leaderboard.map.id,
          leaderboardId: leaderboard.id,
-         search: legacyLeaderboardSearchParams(data.search)
-      } as const;
+         search: data.search
+      };
    });
 
 export const Route = createFileRoute('/(legacy)/leaderboard/$leaderboardId')({

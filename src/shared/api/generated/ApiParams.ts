@@ -356,6 +356,8 @@ export type PasswordAuthControllerCompletePasswordSetupResponse = _R<_Auth['pass
 
 export type PasswordAuthControllerChangePasswordResponse = _R<_Auth['passwordAuthControllerChangePassword']>;
 
+export type PasskeyControllerStartRegistrationResponse = _R<_Auth['passkeyControllerStartRegistration']>;
+
 export type PasskeyControllerVerifyRegistrationResponse = _R<_Auth['passkeyControllerVerifyRegistration']>;
 
 export type PasskeyControllerStartAuthenticationResponse = _R<_Auth['passkeyControllerStartAuthentication']>;

@@ -1,4 +1,6 @@
-module.exports = {
+import type { GenerateApiConfiguration } from 'swagger-typescript-api';
+
+const config: Partial<GenerateApiConfiguration['config']> = {
    primitiveTypeConstructs: (constructs) => ({
       ...constructs,
       string: {
@@ -19,3 +21,5 @@ module.exports = {
       onFormatTypeName: (typeName) => typeName.replaceAll('P' + 'p', 'PP')
    }
 };
+
+export default config;

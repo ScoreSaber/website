@@ -41,7 +41,7 @@ const chartPrefsSchema = z.object({
 });
 
 function loadPrefs() {
-   if (typeof window === 'undefined') return DEFAULT_CHART_PREFS;
+   if (globalThis.window === undefined) return DEFAULT_CHART_PREFS;
 
    const storedPrefs = Result.unwrapOr(readStorageJson(STORAGE_KEY, chartPrefsSchema), null);
    if (!storedPrefs) return DEFAULT_CHART_PREFS;
@@ -54,7 +54,7 @@ function loadPrefs() {
    };
 }
 
-const mobileQuery = typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)') : null;
+const mobileQuery = globalThis.window === undefined ? null : window.matchMedia('(max-width: 767px)');
 function subscribeIsMobile(cb: () => void) {
    mobileQuery?.addEventListener('change', cb);
    return () => mobileQuery?.removeEventListener('change', cb);

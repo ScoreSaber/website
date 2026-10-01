@@ -1,5 +1,5 @@
 import { z } from 'zod';
 
-export const LIVE_TABS = ['settings', 'players', 'teams', 'roles', 'rooms'] as const;
-export const liveTabSchema = z.enum(LIVE_TABS);
+export const liveTabSchema = z.enum(['settings', 'players', 'teams', 'roles', 'rooms']);
 export type LiveTab = z.infer<typeof liveTabSchema>;
+export const LIVE_TABS = liveTabSchema.options;

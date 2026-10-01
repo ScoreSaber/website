@@ -6,6 +6,13 @@ import { useTranslations } from 'use-intl';
 import { Stat } from '@/shared/components/stat';
 import { cn } from '@/shared/format/helpers';
 
+type NonClearOutcome = 'FAIL' | 'QUIT' | 'RESTART';
+type OutcomeStyle = {
+   icon: typeof X;
+   className: string;
+   labelKey: 'score.outcomeFailAt' | 'score.outcomeQuitAt' | 'score.outcomeRestartAt';
+};
+
 const OUTCOME_STYLES = {
    FAIL: {
       icon: X,
@@ -22,9 +29,7 @@ const OUTCOME_STYLES = {
       className: 'border-sky-500/50 bg-sky-500/10 text-sky-500',
       labelKey: 'score.outcomeRestartAt'
    }
-} as const;
-
-type NonClearOutcome = keyof typeof OUTCOME_STYLES;
+} satisfies Record<NonClearOutcome, OutcomeStyle>;
 
 export function formatOutcomeTime(seconds: number) {
    const total = Math.max(0, Math.floor(seconds));

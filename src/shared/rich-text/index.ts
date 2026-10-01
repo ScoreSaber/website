@@ -21,9 +21,10 @@ const richTextPolicy = {
 
 const richTextImageHosts = [...richTextPolicy.imageHosts];
 const richTextEmbedPlatforms = [...richTextPolicy.embedPlatforms];
+const richTextStyleValidators = new Map<string, RegExp[]>(Object.entries(richTextPolicy.styles));
 
 function sanitizeRichTextHtml(value: string): string {
-   if (typeof DOMParser === 'undefined') return value;
+   if (globalThis.DOMParser === undefined) return value;
 
    const doc = new DOMParser().parseFromString(`<div>${value}</div>`, 'text/html');
    const root = doc.body.firstElementChild;
@@ -108,7 +109,7 @@ function isAllowedRichTextImage(value: string) {
 }
 
 function hasRichTextContent(value: string): boolean {
-   if (typeof DOMParser === 'undefined') {
+   if (globalThis.DOMParser === undefined) {
       const textContent = value
          .replace(/<[^>]*>/g, '')
          .replace(/\u00a0/g, ' ')
@@ -234,7 +235,7 @@ function sanitizeStyle(value: string) {
 
          const prop = part.slice(0, separator).trim().toLowerCase();
          const styleValue = part.slice(separator + 1).trim();
-         const validators = richTextPolicy.styles[prop as keyof typeof richTextPolicy.styles];
+         const validators = richTextStyleValidators.get(prop);
          return validators?.some((validator) => validator.test(styleValue)) ? `${prop}: ${styleValue}` : null;
       })
       .filter((part): part is string => !!part)

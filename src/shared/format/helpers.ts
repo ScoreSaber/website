@@ -46,37 +46,37 @@ export function isSteamPlayer(id: string) {
    return parseInt(id, 10) >= 70000000000000000;
 }
 
-const htmlEntities: Record<string, string> = {
-   '&amp;': '&',
-   '&lt;': '<',
-   '&gt;': '>',
-   '&quot;': '"',
-   '&#39;': "'",
-   '&apos;': "'"
-};
+const htmlEntities = new Map([
+   ['&amp;', '&'],
+   ['&lt;', '<'],
+   ['&gt;', '>'],
+   ['&quot;', '"'],
+   ['&#39;', "'"],
+   ['&apos;', "'"]
+]);
 const entityPattern = /&(?:amp|lt|gt|quot|#39|apos);/g;
 
 export function decodeHtmlEntities(text: string) {
-   return text.replace(entityPattern, (match) => htmlEntities[match] ?? match);
+   return text.replace(entityPattern, (match) => htmlEntities.get(match) ?? match);
 }
 
-const LEGACY_HMDS: Record<number, string> = {
-   0: 'Unknown',
-   1: 'Rift CV1',
-   2: 'Vive',
-   4: 'Vive Pro',
-   8: 'Windows MR',
-   16: 'Rift S',
-   32: 'Quest',
-   64: 'Valve Index',
-   128: 'Vive Cosmos'
-};
+const LEGACY_HMDS = new Map([
+   [0, 'Unknown'],
+   [1, 'Rift CV1'],
+   [2, 'Vive'],
+   [4, 'Vive Pro'],
+   [8, 'Windows MR'],
+   [16, 'Rift S'],
+   [32, 'Quest'],
+   [64, 'Valve Index'],
+   [128, 'Vive Cosmos']
+]);
 
 type ScoreDevice = PlayerControllerGetPlayerScoresDataItem['score']['device'] | LeaderboardControllerGetLeaderboardScoresByIdDataItem['device'];
 
 export function getHmdName(device: ScoreDevice, legacyHmdId: number | null): string | null {
    if (device?.hmd) return device.hmd;
-   if (legacyHmdId != null && legacyHmdId in LEGACY_HMDS) return LEGACY_HMDS[legacyHmdId];
+   if (legacyHmdId != null) return LEGACY_HMDS.get(legacyHmdId) ?? null;
    return null;
 }
 

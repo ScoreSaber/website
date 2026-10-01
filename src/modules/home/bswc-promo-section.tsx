@@ -357,53 +357,28 @@ function CountdownLine({ parts }: { parts: CountdownPart[] }) {
 }
 
 function formatCountdownDurationParts(locale: string, parts: CountdownPart[]) {
-   const DurationFormat = getDurationFormat();
+   const DurationFormat = Intl.DurationFormat;
    if (!DurationFormat) return null;
 
    return new DurationFormat(locale, getDurationFormatOptions(parts)).formatToParts(Object.fromEntries(parts.map(({ key, value }) => [key, value])));
 }
 
 function getDurationFormatOptions(parts: CountdownPart[]) {
-   const options: DurationFormatOptions = { style: 'narrow' };
-   for (const { key } of parts) options[DURATION_DISPLAY_OPTIONS[key]] = 'always';
+   const options: Intl.DurationFormatOptions = { style: 'narrow' };
+   for (const { key } of parts) options[`${key}Display`] = 'always';
    return options;
 }
 
-function getCountdownUnitLabel(parts: DurationFormatPart[] | null, key: CountdownPartKey) {
-   return parts?.find((part) => part.type === 'unit' && part.unit && DURATION_UNIT_KEYS[part.unit] === key)?.value;
+function getCountdownUnitLabel(parts: Intl.DurationFormatPart[] | null, key: CountdownPartKey) {
+   return parts?.find((part) => part.type === 'unit' && part.unit && DURATION_UNIT_KEYS.get(part.unit) === key)?.value;
 }
 
-function getDurationFormat() {
-   const intlWithDuration = Intl as typeof Intl & { DurationFormat?: DurationFormatConstructor };
-   return intlWithDuration.DurationFormat ?? null;
-}
-
-const DURATION_UNIT_KEYS = {
-   day: 'days',
-   hour: 'hours',
-   minute: 'minutes',
-   second: 'seconds'
-} satisfies Record<string, CountdownPartKey>;
-
-const DURATION_DISPLAY_OPTIONS: Record<CountdownPartKey, DurationDisplayOption> = {
-   days: 'daysDisplay',
-   hours: 'hoursDisplay',
-   minutes: 'minutesDisplay',
-   seconds: 'secondsDisplay'
-};
-
-type DurationFormatConstructor = new (
-   locale: string,
-   options: DurationFormatOptions
-) => {
-   formatToParts(duration: Partial<Record<CountdownPartKey, number>>): DurationFormatPart[];
-};
-
-type DurationDisplayOption = `${CountdownPartKey}Display`;
-type DurationFormatOptions = { style: 'long' | 'short' | 'narrow' } & Partial<Record<DurationDisplayOption, 'auto' | 'always'>>;
-
-type DurationFormatUnit = keyof typeof DURATION_UNIT_KEYS;
-type DurationFormatPart = { type: string; value: string; unit?: DurationFormatUnit };
+const DURATION_UNIT_KEYS = new Map([
+   ['day', 'days'],
+   ['hour', 'hours'],
+   ['minute', 'minutes'],
+   ['second', 'seconds']
+]);
 
 function getCountdownParts(startsAt: string | undefined, now: number): CountdownPart[] {
    const startsAtMs = startsAt ? Date.parse(startsAt) : 0;

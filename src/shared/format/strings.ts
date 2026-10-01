@@ -30,18 +30,20 @@ export function getDifficultyShortLabel(difficulty: number) {
    return getDifficultyLabel(difficulty);
 }
 
-const GAME_MODE_LABELS: Record<string, string> = {
-   SoloStandard: 'Standard',
-   SoloNoArrows: 'No Arrows',
-   Solo90Degree: '90°',
-   Solo360Degree: '360°',
-   SoloLightshow: 'Lightshow',
-   SoloLawless: 'Lawless',
-   SoloGenerated90Degree: 'Generated 90°',
-   SoloGenerated360Degree: 'Generated 360°',
-   SoloStandardOldDots: 'Standard (Old Dots)',
-   SoloHorizontalStandard: 'Horizontal Standard'
-};
+const GAME_MODE_LABELS = new Map<string, string>(
+   Object.entries({
+      SoloStandard: 'Standard',
+      SoloNoArrows: 'No Arrows',
+      Solo90Degree: '90°',
+      Solo360Degree: '360°',
+      SoloLightshow: 'Lightshow',
+      SoloLawless: 'Lawless',
+      SoloGenerated90Degree: 'Generated 90°',
+      SoloGenerated360Degree: 'Generated 360°',
+      SoloStandardOldDots: 'Standard (Old Dots)',
+      SoloHorizontalStandard: 'Horizontal Standard'
+   })
+);
 
 export const DEFAULT_GAME_MODE = 'SoloStandard';
 
@@ -52,9 +54,8 @@ export function getGameModeFromRawDifficulty(rawDifficulty: string) {
 }
 
 export function getGameModeLabel(gameMode: string) {
-   if (gameMode in GAME_MODE_LABELS) {
-      return GAME_MODE_LABELS[gameMode];
-   }
+   const label = GAME_MODE_LABELS.get(gameMode);
+   if (label) return label;
    // unknown mode, strip "Solo" and space out capitals
    const stripped = gameMode.startsWith('Solo') ? gameMode.slice(4) : gameMode;
    return stripped.replace(/([A-Z])/g, ' $1').trim();

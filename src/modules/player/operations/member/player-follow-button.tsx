@@ -17,6 +17,10 @@ import { followPlayer, unfollowPlayer } from '@/modules/player/actions/user/memb
 import { cn } from '@/shared/format/helpers';
 
 type FollowState = 'none' | 'follower' | 'following' | 'mutual';
+interface ResolvedFollowState {
+   state: FollowState;
+   platformFriend: boolean;
+}
 
 interface PlayerFollowButtonProps {
    playerId: string;
@@ -156,11 +160,7 @@ export function PlayerFollowButton({ playerId, compact, followsViewer = false }:
    return button;
 }
 
-function resolveFollowState(
-   user: ReturnType<typeof useAuth>['user'],
-   playerId: string,
-   followsViewer: boolean
-): { state: FollowState; platformFriend: boolean } {
+function resolveFollowState(user: ReturnType<typeof useAuth>['user'], playerId: string, followsViewer: boolean): ResolvedFollowState {
    if (!user) return { state: 'none', platformFriend: false };
 
    const mutual = user.relationships.mutuals.find((relationship) => relationship.id === playerId);

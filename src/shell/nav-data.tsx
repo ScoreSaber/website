@@ -7,7 +7,6 @@ import { Icons } from '@/shared/components/icons';
 
 type NavKey = keyof Messages['nav'];
 export type AppNavRoute = 'home' | 'maps' | 'rankings' | 'rankRequests' | 'live' | 'questInstaller' | 'team' | 'support';
-type AppRouteId = RouteIds<RegisteredRouter['routeTree']>;
 type NavItem = { key: NavKey; shortKey: NavKey; icon: React.ReactNode; route: AppNavRoute; disabled?: boolean };
 type SearchNavItem = { key: NavKey; shortKey: NavKey; icon: React.ReactNode; action: 'search' };
 type InternalSecondaryItem = { key: NavKey; icon: React.ReactNode; route: AppNavRoute; external: false };
@@ -117,7 +116,7 @@ const navRouteIds = {
    questInstaller: '/quest',
    team: '/team',
    support: '/support'
-} satisfies Record<AppNavRoute, AppRouteId>;
+} satisfies Record<AppNavRoute, RouteIds<RegisteredRouter['routeTree']>>;
 
 export function isNavActive(pathname: string, route: AppNavRoute) {
    const href = navRouteIds[route];

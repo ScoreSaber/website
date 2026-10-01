@@ -25,7 +25,7 @@ export function DeviceCodePanel({
 }: {
    autoStart?: boolean;
    className?: string;
-   onStartErrorAction?: (error: unknown) => void;
+   onStartErrorAction?: (error: Error) => void;
 }) {
    const t = useTranslations();
    const didAutoStart = useRef(false);
@@ -53,9 +53,9 @@ export function DeviceCodePanel({
       if (Result.isOk(result)) {
          setDevice(result.value);
       } else {
-         const message = result.error instanceof Error ? result.error.message : t('settings.security.deviceCodeFailed');
-         setStartError(message);
-         onStartErrorAction?.(result.error);
+         const error = result.error instanceof Error ? result.error : new Error(t('settings.security.deviceCodeFailed'));
+         setStartError(error.message);
+         onStartErrorAction?.(error);
       }
 
       setStartPending(false);

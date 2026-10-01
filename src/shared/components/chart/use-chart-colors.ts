@@ -2,9 +2,7 @@ import { useMemo } from 'react';
 
 import { useTheme } from '@/shared/ui-adjacent/theme-provider';
 
-type ChartMetricKey = 'rank' | 'totalPP' | 'averageAccuracy' | 'totalSubmittedPlays';
-
-const METRIC_VARS: Record<ChartMetricKey, string> = {
+const METRIC_VARS = {
    rank: '--chart-metric-rank',
    totalPP: '--chart-metric-pp',
    averageAccuracy: '--chart-metric-acc',
@@ -12,7 +10,7 @@ const METRIC_VARS: Record<ChartMetricKey, string> = {
 };
 
 function getVar(name: string) {
-   if (typeof document === 'undefined') return '';
+   if (globalThis.document === undefined) return '';
    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
@@ -54,13 +52,13 @@ function computeColors(resolvedTheme: 'light' | 'dark') {
    const averageAccuracyColor = getVar(METRIC_VARS.averageAccuracy);
    const totalSubmittedPlaysColor = getVar(METRIC_VARS.totalSubmittedPlays);
 
-   const metricBorder: Record<ChartMetricKey, string> = {
+   const metricBorder = {
       rank: rankColor ? toRgba(rankColor) : '#888',
       totalPP: totalPPColor ? toRgba(totalPPColor) : '#888',
       averageAccuracy: averageAccuracyColor ? toRgba(averageAccuracyColor) : '#888',
       totalSubmittedPlays: totalSubmittedPlaysColor ? toRgba(totalSubmittedPlaysColor) : '#888'
    };
-   const metricBg: Record<ChartMetricKey, string> = {
+   const metricBg = {
       rank: rankColor ? toRgba(rankColor, 0.1) : 'rgba(128,128,128,0.1)',
       totalPP: totalPPColor ? toRgba(totalPPColor, 0.1) : 'rgba(128,128,128,0.1)',
       averageAccuracy: averageAccuracyColor ? toRgba(averageAccuracyColor, 0.1) : 'rgba(128,128,128,0.1)',

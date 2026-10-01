@@ -6,9 +6,8 @@ import type {
    MapControllerGetMapListingsSortDirection
 } from '@/shared/api/generated/ApiParams';
 import { parseCountryRegionParam, type CountryRegionFilterValue } from '@/shared/country-region';
-import type { SearchParamsRecord } from '@/shared/url-state/search-params';
+import type { SearchParamsRecord, SearchParamValue } from '@/shared/url-state/search-params';
 
-export type LegacyLeaderboardQuery = Record<string, unknown>;
 type MapsSearchParams = SearchParamsRecord & {
    page?: number;
    search?: string;
@@ -27,7 +26,7 @@ type LeaderboardSearchParams = SearchParamsRecord & {
    highlight?: number;
 };
 
-function unwrapQueryValue(value: unknown) {
+function unwrapQueryValue(value: SearchParamValue) {
    return Array.isArray(value) ? value[0] : value;
 }
 
@@ -72,7 +71,7 @@ const legacySortDirectionParam = z
       return undefined;
    });
 
-const legacyLeaderboardsQuery = z
+export const legacyLeaderboardsQuery = z
    .object({
       page: legacyPageParam,
       search: legacySearchParam,
@@ -100,7 +99,7 @@ const legacyLeaderboardsQuery = z
       };
    });
 
-const legacyLeaderboardQuery = z
+export const legacyLeaderboardQuery = z
    .object({
       page: legacyPageParam,
       search: legacySearchParam,
@@ -117,12 +116,4 @@ const legacyLeaderboardQuery = z
 export function parseLegacyRouteId(value: string | undefined) {
    const result = legacyRouteId.safeParse(value);
    return result.success ? result.data : null;
-}
-
-export function legacyLeaderboardsSearchParams(query: LegacyLeaderboardQuery): MapsSearchParams {
-   return legacyLeaderboardsQuery.parse(query);
-}
-
-export function legacyLeaderboardSearchParams(query: LegacyLeaderboardQuery): LeaderboardSearchParams {
-   return legacyLeaderboardQuery.parse(query);
 }

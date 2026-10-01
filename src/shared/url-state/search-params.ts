@@ -1,4 +1,5 @@
 import type { CountryRegionFilterValue } from '@/shared/country-region';
 
-export type SearchParamValue = string | number | boolean | CountryRegionFilterValue | null | undefined;
+type SearchParamScalar = string | number | bigint | boolean | CountryRegionFilterValue | null | undefined;
+export type SearchParamValue = SearchParamScalar | SearchParamScalar[];
 export type SearchParamsRecord = Record<string, SearchParamValue>;

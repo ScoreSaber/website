@@ -28,6 +28,7 @@ import { PlayerProfileHeader } from '@/modules/player/profile/player-profile-hea
 import { PlayerScoresList } from '@/modules/player/profile/player-scores-list';
 import { PlayerScoresToolbar } from '@/modules/player/profile/player-scores-toolbar';
 import { versionedImageUrl } from '@/modules/player/shared/player-avatar';
+import type { UserControllerUpdateProfileCustomizationPayload } from '@/shared/api/generated/Api';
 import type {
    AdminUserControllerGetActiveBanResponse,
    PlayerControllerGetPlayerResponse,
@@ -42,7 +43,7 @@ import { cn, formatAccuracy, formatNumber, formatPP } from '@/shared/format/help
 import { apiResult, optionalApi, optionalApiData, pageApiData } from '@/shared/result/api';
 import { hasRichTextContent, sanitizeRichTextHtml } from '@/shared/rich-text/server';
 import { buildSeoHead } from '@/shared/seo/metadata';
-import { isPageNumber, isPlayerId, isVanitySlug, ScoreEnum, validateRequest } from '@/shared/url-state/params';
+import { isPageNumber, isPlayerId, isVanitySlug, ScoreEnum, requestOrNotFound } from '@/shared/url-state/params';
 import type { SearchParamsRecord } from '@/shared/url-state/search-params';
 import { updateSearchParams } from '@/shared/url-state/update-search-params';
 import { SetPageBackground } from '@/shell/background/page-background-provider';
@@ -74,9 +75,8 @@ type BanMetadataAccess = { visible: false } | { visible: true; record: AdminUser
 
 const hiddenBanMetadata: BanMetadataAccess = { visible: false };
 
-const DEFAULT_PROFILE_SECTION_ORDER = ['charts', 'bio', 'pinnedScores', 'scores'] as const;
-
-type PlayerProfileSectionId = (typeof DEFAULT_PROFILE_SECTION_ORDER)[number];
+type PlayerProfileSectionId = NonNullable<UserControllerUpdateProfileCustomizationPayload['sectionOrder']>[number];
+const DEFAULT_PROFILE_SECTION_ORDER: PlayerProfileSectionId[] = ['charts', 'bio', 'pinnedScores', 'scores'];
 const REQUIRED_PROFILE_SECTION_IDS: readonly PlayerProfileSectionId[] = ['scores'];
 
 const getPlayerProfilePageData = createServerFn({ method: 'GET' })
@@ -123,7 +123,7 @@ const getPlayerProfilePageData = createServerFn({ method: 'GET' })
       }
 
       return {
-         result: { ok: true as const, data: player },
+         result: { ok: true, data: player },
          scores,
          history,
          aliases,
@@ -137,9 +137,9 @@ const getPlayerProfilePageData = createServerFn({ method: 'GET' })
 
 export const Route = createFileRoute('/u/$playerId')({
    params: {
-      parse: (params) => validateRequest(playerParamsSchema, params)
+      parse: (params) => requestOrNotFound(playerParamsSchema.safeParse(params))
    },
-   validateSearch: (search): PlayerProfileSearch => validateRequest(playerSearchSchema, search),
+   validateSearch: (search): PlayerProfileSearch => requestOrNotFound(playerSearchSchema.safeParse(search)),
    loaderDeps: ({ search }) => search,
    loader: ({ params, deps }) =>
       getPlayerProfilePageData({

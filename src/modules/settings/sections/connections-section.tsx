@@ -38,7 +38,6 @@ interface ConnectionsSectionProps {
 
 type ConnectionProvider = UserControllerGetConnectionsItem['provider'];
 type MergeProvider = Extract<ConnectionProvider, 'STEAM' | 'OCULUS'>;
-type SecondaryProvider = Extract<ConnectionProvider, 'PATREON' | 'DISCORD'>;
 type SwitchPrimaryConnection = Extract<Awaited<ReturnType<typeof switchPrimaryConnection>>, { ok: true }>['value'];
 type RefreshPatreonBenefits = Extract<Awaited<ReturnType<typeof refreshPatreonBenefits>>, { ok: true }>['value'];
 
@@ -48,19 +47,19 @@ const primaryProviders: ConnectionProvider[] = ['SCORESABER', 'STEAM', 'OCULUS']
 const secondaryProviderLocations = {
    PATREON: () => linkOptions({ to: '/auth/patreon', search: { intent: 'link' } }),
    DISCORD: () => linkOptions({ to: '/auth/discord', search: { intent: 'link' } })
-} satisfies Record<SecondaryProvider, () => object>;
+};
 
 type ProviderIconProps = {
    className?: string;
 };
 
-const providerIcons: Record<ConnectionProvider, ComponentType<ProviderIconProps>> = {
+const providerIcons = {
    SCORESABER: ({ className }) => <Image src="/scoresaber.svg" width={20} height={20} alt="" className={className} aria-hidden />,
    STEAM: ({ className }) => <Icons.steam className={className} aria-hidden />,
    OCULUS: ({ className }) => <Icons.meta className={className} aria-hidden />,
    PATREON: ({ className }) => <Icons.patreon className={className} aria-hidden />,
    DISCORD: ({ className }) => <Icons.discordColor className={className} aria-hidden />
-};
+} satisfies Record<ConnectionProvider, ComponentType<ProviderIconProps>>;
 
 export function ConnectionsSection({ connections, initialMergeChallengeId, steamFailed }: ConnectionsSectionProps) {
    const t = useTranslations();
@@ -81,7 +80,7 @@ export function ConnectionsSection({ connections, initialMergeChallengeId, steam
       OCULUS: t('common.providers.OCULUS'),
       PATREON: t('common.providers.PATREON'),
       DISCORD: t('common.providers.DISCORD')
-   } satisfies Record<ConnectionProvider, string>;
+   };
 
    useEffect(() => {
       if (!initialMergeChallengeId && !steamFailed) return;

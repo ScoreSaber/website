@@ -9,15 +9,21 @@ import { getClientRequestHeaders } from '@/shared/api/client-request.server';
 import { api } from '@/shared/api/server-api';
 import { optionalApi } from '@/shared/result/api';
 import { buildNoindexHead } from '@/shared/seo/metadata';
-import { validateRequest } from '@/shared/url-state/params';
+import { requestOrNotFound } from '@/shared/url-state/params';
 import { SetPageBackground } from '@/shell/background/page-background-provider';
 
-const accountSettingsSearchSchema = z.object({
-   setupPassword: z.preprocess((val) => {
-      const value = Array.isArray(val) ? val[0] : val;
-      return value === 'true' ? true : value;
-   }, z.literal(true).optional())
-});
+const trueSearchParamSchema = z
+   .union([
+      z.literal(true),
+      z.literal('true'),
+      z
+         .tuple([z.union([z.literal(true), z.literal('true')])])
+         .rest(z.unknown())
+         .transform(([value]) => value)
+   ])
+   .transform(() => true)
+   .optional();
+const accountSettingsSearchSchema = z.object({ setupPassword: trueSearchParamSchema });
 
 const getAccountSettingsData = createServerFn({ method: 'GET' }).handler(async () => {
    const [countryReset, connections, passkeys, credential, vanity] = await Promise.all([
@@ -38,7 +44,7 @@ const getAccountSettingsData = createServerFn({ method: 'GET' }).handler(async (
 });
 
 export const Route = createFileRoute('/settings/account')({
-   validateSearch: (search) => validateRequest(accountSettingsSearchSchema, search),
+   validateSearch: (search) => requestOrNotFound(accountSettingsSearchSchema.safeParse(search)),
    loader: () => getAccountSettingsData(),
    head: () => buildNoindexHead('Account Settings', 'Manage your ScoreSaber account settings', '/settings/account'),
    component: SettingsAccountRoute

@@ -17,7 +17,6 @@ import type {
 } from '@/shared/api/generated/ApiParams';
 import { api } from '@/shared/api/server-api';
 import { apiResult } from '@/shared/result/api';
-import { getSetCookieHeaders } from '@/shared/storage/set-cookie';
 import { stringifyUrlSearch } from '@/shared/url-state/search-serializer';
 
 type OAuthProvider = 'discord' | 'patreon';
@@ -238,7 +237,7 @@ async function handleOAuthCallback({
 }
 
 function appendApiCookies(redirect: Response, headers: Headers) {
-   for (const setCookie of getSetCookieHeaders(headers)) {
+   for (const setCookie of headers.getSetCookie()) {
       redirect.headers.append('set-cookie', setCookie);
    }
 }

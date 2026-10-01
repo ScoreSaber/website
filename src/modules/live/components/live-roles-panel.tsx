@@ -405,12 +405,14 @@ function createEmptyRoleForm(permissions: readonly LiveTournamentPermission[]): 
 function createRolePayloadSchema(permissions: readonly LiveTournamentPermission[]) {
    const liveTournamentPermissionSchema = z.custom<LiveTournamentPermission>((value) => permissions.some((permission) => permission === value));
 
-   return z.object({
+   const schema: z.ZodType<LiveTournamentRosterControllerUpsertRolePayload> = z.object({
       id: z.number().int().positive().optional(),
       name: z.string().trim().min(1),
       description: nullableTrimmedStringSchema,
       color: nullableTrimmedStringSchema,
       order: z.number().int(),
       permissions: z.array(liveTournamentPermissionSchema).min(1)
-   }) satisfies z.ZodType<LiveTournamentRosterControllerUpsertRolePayload>;
+   });
+
+   return schema;
 }

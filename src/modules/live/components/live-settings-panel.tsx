@@ -39,7 +39,7 @@ export function LiveSettingsPanel({
    const tc = useTranslations('common');
    const mutation = useActionMutation<LiveSettings>();
    const statusSchema = useMemo(() => createStatusSchema(options.tournamentStatuses), [options.tournamentStatuses]);
-   const defaultStatus = options.tournamentStatuses[0]!;
+   const defaultStatus = options.tournamentStatuses[0] ?? 'DRAFT';
    const [savedName, setSavedName] = useState(settings?.name ?? tournamentId);
    const [savedStatus, setSavedStatus] = useState<LiveSettingsPayload['status']>(settings?.status ?? defaultStatus);
    const [savedDeniedModsText, setSavedDeniedModsText] = useState(formatDeniedMods(settings?.deniedMods ?? []));

@@ -23,7 +23,7 @@ interface DeviceDisplayProps {
    className?: string;
 }
 
-const SIZE_CLASSES: Record<DeviceDisplaySize, { hmd: string; controller: string }> = {
+const SIZE_CLASSES = {
    xs: { hmd: 'h-3.5', controller: 'h-3.5' },
    sm: { hmd: 'h-4', controller: 'h-4' },
    md: { hmd: 'h-6', controller: 'h-5' }

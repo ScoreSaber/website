@@ -25,8 +25,8 @@ const publicBrowserUrlSchema = z.url().refine(
    { message: 'must be https, or localhost http' }
 );
 
-function readEnv(key: string) {
-   const processValue = typeof process !== 'undefined' ? process.env[key] : undefined;
+function readEnv(key: keyof Omit<ImportMetaEnv, 'DEV' | 'PROD' | 'SSR'>) {
+   const processValue = globalThis.process?.env[key];
    const importMetaValue = import.meta.env[key];
    return processValue ?? importMetaValue;
 }
@@ -35,7 +35,7 @@ const isProduction = readEnv('NODE_ENV') === 'production';
 const localDefault = <T>(schema: z.ZodType<T>, defaultValue: Exclude<T, undefined>) => (isProduction ? schema : schema.default(defaultValue));
 
 export const env = createEnv({
-   isServer: typeof window === 'undefined',
+   isServer: globalThis.window === undefined,
    shared: {
       NODE_ENV: z.enum(['development', 'production', 'test']).default('development')
    },

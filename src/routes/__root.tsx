@@ -49,7 +49,7 @@ const rootSearchSchema = z
    .passthrough();
 
 const ROOT_DATA_STALE_MS = 5 * 60 * 1000;
-const ROOT_SHELL_QUERY_KEY = ['root-shell'] as const;
+const ROOT_SHELL_QUERY_KEY = ['root-shell'];
 
 const getRootShellData = createServerFn({ method: 'GET' }).handler(async () => {
    const token = readAuthCookie();

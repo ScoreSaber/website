@@ -4,7 +4,7 @@ import { cn } from '@/shared/format/helpers';
 
 type CardVariant = 'default' | 'settings';
 
-const cardSurfaceVariants: Record<CardVariant, string> = {
+const cardSurfaceVariants = {
    default: 'bg-card text-card-foreground rounded-xl border shadow-sm',
    settings: 'bg-background/35 text-card-foreground rounded-lg border shadow-none'
 };

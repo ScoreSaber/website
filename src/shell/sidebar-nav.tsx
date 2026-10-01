@@ -203,7 +203,7 @@ export function SidebarNav({ onNavigateAction }: { onNavigateAction?: () => void
             {visibleSecondaryItems.map((item) => (
                <SidebarNavLink
                   key={item.key}
-                  {...(item.external ? { external: true as const, href: item.href } : { route: item.route })}
+                  {...(item.external ? { external: true, href: item.href } : { route: item.route })}
                   className={cn(navLinkClass, !item.external && isNavActive(pathname, item.route) ? activeClass : inactiveClass)}
                   onNavigateAction={onNavigateAction}
                >

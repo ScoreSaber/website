@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'use-intl';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -53,6 +54,8 @@ import {
    richTextImageHosts,
    sanitizeRichTextHtml
 } from '@/shared/rich-text';
+
+const editorAttributeSchema = z.string();
 
 interface RichTextEditorProps {
    id?: string;
@@ -221,8 +224,8 @@ export function RichTextEditor({ id, value, onChangeAction, placeholder, disable
                : undefined;
 
    function openDialog(type: Exclude<RichTextDialogType, null>) {
-      const href = editor?.getAttributes('link').href;
-      setDialogValue(type === 'link' && typeof href === 'string' ? href : '');
+      const href = editorAttributeSchema.safeParse(editor?.getAttributes('link').href);
+      setDialogValue(type === 'link' && href.success ? href.data : '');
       setDialogType(type);
    }
 

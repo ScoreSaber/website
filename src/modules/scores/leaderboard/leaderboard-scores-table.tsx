@@ -198,7 +198,7 @@ function LeaderboardScoreCard({
                         <Time
                            short
                            date={score.createdAt}
-                           longRelativeClassName="[font-size:var(--short-time-font-size)]"
+                           longRelativeClassName="text-(length:--short-time-font-size)"
                            shortFitTargetLength={12}
                            minShortFitScale={0.85}
                         />

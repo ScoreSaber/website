@@ -17,7 +17,7 @@ import type { QuestRelease } from '@/modules/quest/lib/releases';
 import { api } from '@/shared/api/ApiInstance';
 import { Time } from '@/shared/components/time';
 import { cn } from '@/shared/format/helpers';
-import { queryApiData } from '@/shared/result/api';
+import { ApiRequestError, queryApiData } from '@/shared/result/api';
 import { getRouteHref } from '@/shared/url-state/route-location';
 
 const DOWNLOAD_FILENAME = 'ScoreSaber_DO_NOT_SHARE.qmod';
@@ -38,6 +38,8 @@ export function StepDownload({ releases, hasPrereleases, showPrereleases, onTogg
 
    const downloadMutation = useMutation({
       mutationFn: async (tag: string) => {
+         if (!user) throw new Error(t('quest.step.3.downloadAuthError'));
+
          const [{ questKey }, qmodResponse, { default: JSZip }] = await Promise.all([
             queryApiData(api.user.userControllerGetQuestKey()),
             fetch(getRouteHref(router, linkOptions({ to: '/quest/download', search: { tag } }))),
@@ -48,7 +50,7 @@ export function StepDownload({ releases, hasPrereleases, showPrereleases, onTogg
          }
          const buffer = await qmodResponse.arrayBuffer();
          const zip = await JSZip.loadAsync(buffer);
-         zip.file(QUEST_KEY_FILENAME, `${questKey}:${user!.id}`);
+         zip.file(QUEST_KEY_FILENAME, `${questKey}:${user.id}`);
          return zip.generateAsync({ type: 'blob', mimeType: 'application/qmod' });
       },
       onSuccess: (blob) => {
@@ -63,8 +65,7 @@ export function StepDownload({ releases, hasPrereleases, showPrereleases, onTogg
          toast.success(t('quest.step.3.downloadStarted'));
       },
       onError: (err) => {
-         const status = 'status' in err && typeof err.status === 'number' ? err.status : undefined;
-         const message = status === 401 ? t('quest.step.3.downloadAuthError') : err.message;
+         const message = err instanceof ApiRequestError && err.status === 401 ? t('quest.step.3.downloadAuthError') : err.message;
          toast.error(message);
       }
    });

@@ -12,8 +12,6 @@ import { getApiOrigin, getSiteUrl, safeSitePath } from '@/modules/auth/lib/redir
 import { LoginFlow, type LoginPanel } from '@/modules/auth/login/login-flow';
 import { getRouteHref } from '@/shared/url-state/route-location';
 
-const loginOAuthProviders = ['steam', 'patreon', 'discord'] as const;
-
 type LoginSearchParams = {
    steam?: 'failed';
    patreon?: 'failed';
@@ -21,6 +19,9 @@ type LoginSearchParams = {
    mode?: 'password-reset' | 'signup';
    redirectTo?: string;
 };
+
+type LoginOAuthProvider = 'steam' | 'patreon' | 'discord';
+const loginOAuthProviders: LoginOAuthProvider[] = ['steam', 'patreon', 'discord'];
 
 export function LoginScreen({ params }: { params: LoginSearchParams }) {
    const t = useTranslations();

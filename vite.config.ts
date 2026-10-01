@@ -14,6 +14,15 @@ export default defineConfig(({ mode }) => {
    if (env.NEXT_PUBLIC_SITE_URL && URL.canParse(env.NEXT_PUBLIC_SITE_URL)) {
       allowedHosts.push(new URL(env.NEXT_PUBLIC_SITE_URL).hostname);
    }
+   const proxy = localArcviewerUrl
+      ? {
+           '/watch': {
+              target: localArcviewerUrl,
+              changeOrigin: true,
+              rewrite: (path: string) => (path === '/watch' || path === '/watch/index.html' ? '/' : path.replace(/^\/watch/, ''))
+           }
+        }
+      : undefined;
 
    return {
       fmt: {
@@ -80,17 +89,7 @@ export default defineConfig(({ mode }) => {
          port: env.PORT ? Number(env.PORT) : undefined,
          allowedHosts,
          sourcemapIgnoreList: (sourcePath) => sourcePath.includes('/node_modules/'),
-         ...(localArcviewerUrl
-            ? {
-                 proxy: {
-                    '/watch': {
-                       target: localArcviewerUrl,
-                       changeOrigin: true,
-                       rewrite: (path: string) => (path === '/watch' || path === '/watch/index.html' ? '/' : path.replace(/^\/watch/, ''))
-                    }
-                 }
-              }
-            : {})
+         proxy
       },
       plugins: lazyPlugins(() => [
          tanstackStart({
@@ -120,7 +119,7 @@ export default defineConfig(({ mode }) => {
             'api:generate': {
                command: [
                   'node scripts/api/preprocess-openapi.ts',
-                  'swagger-typescript-api generate -p ./scripts/api/openapi.processed.json -o ./src/shared/api/generated -r --module-name-first-tag --extract-request-params --extract-request-body --http-client fetch --custom-config scripts/api/generator.config.js',
+                  'swagger-typescript-api generate -p ./scripts/api/openapi.processed.json -o ./src/shared/api/generated -r --module-name-first-tag --extract-request-params --extract-request-body --http-client fetch --custom-config scripts/api/generator.config.ts',
                   'node scripts/api/generate-api-params.ts',
                   'vp fmt src/shared/api/generated'
                ],
@@ -131,7 +130,7 @@ export default defineConfig(({ mode }) => {
                command: [
                   'curl https://api.scoresaber.local/api/openapi.json -o scripts/api/openapi.json',
                   'node scripts/api/preprocess-openapi.ts',
-                  'swagger-typescript-api generate -p ./scripts/api/openapi.processed.json -o ./src/shared/api/generated -r --module-name-first-tag --extract-request-params --extract-request-body --http-client fetch --custom-config scripts/api/generator.config.js',
+                  'swagger-typescript-api generate -p ./scripts/api/openapi.processed.json -o ./src/shared/api/generated -r --module-name-first-tag --extract-request-params --extract-request-body --http-client fetch --custom-config scripts/api/generator.config.ts',
                   'node scripts/api/generate-api-params.ts',
                   'vp fmt src/shared/api/generated'
                ],

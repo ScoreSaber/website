@@ -17,7 +17,7 @@ interface RenderedNumberEffects {
    upsideDown: boolean;
 }
 
-const ROMAN_NUMERALS = [
+const ROMAN_NUMERALS: [number, string][] = [
    [1000, 'M'],
    [900, 'CM'],
    [500, 'D'],
@@ -31,7 +31,7 @@ const ROMAN_NUMERALS = [
    [5, 'V'],
    [4, 'IV'],
    [1, 'I']
-] as const;
+];
 
 function toRomanNumerals(value: number): string {
    if (value === 0) return 'N';

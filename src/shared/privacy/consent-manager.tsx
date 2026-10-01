@@ -29,7 +29,7 @@ const consentColors = {
    switchThumb: 'var(--card)'
 };
 
-const consentTheme = {
+const consentTheme: Theme = {
    colors: consentColors,
    dark: consentColors,
    typography: {
@@ -104,7 +104,7 @@ const consentTheme = {
       buttonSecondary: 'h-9 min-w-28 cursor-pointer whitespace-nowrap rounded-md px-4 text-sm font-medium shadow-none',
       toggle: 'cursor-pointer'
    }
-} satisfies Theme;
+};
 
 function ConsentDescription({ description, privacyPolicy, cookiePolicy }: { description: string; privacyPolicy: string; cookiePolicy: string }) {
    return (

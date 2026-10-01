@@ -1,19 +1,41 @@
 import type { MouseEvent } from 'react';
 
-import type { RegisteredRouter, ValidateNavigateOptions } from '@tanstack/react-router';
-
-type BuildLocationOptions = Parameters<RegisteredRouter['buildLocation']>[0];
+import type { InferFrom, InferMaskFrom, InferMaskTo, InferTo, RegisteredRouter, ToOptions, ValidateNavigateOptions } from '@tanstack/react-router';
 
 type RouteNavigationOptions = {
    replace?: boolean;
    resetScroll?: boolean;
 };
 
-export type RouteLocation<TLocation> = ValidateNavigateOptions<RegisteredRouter, TLocation>;
+type BuildRouteLocationOptions<TLocation> = ToOptions<
+   RegisteredRouter,
+   InferFrom<TLocation>,
+   InferTo<TLocation>,
+   InferMaskFrom<TLocation>,
+   InferMaskTo<TLocation>
+> & {
+   leaveParams?: boolean;
+   _includeValidateSearch?: boolean;
+   _isNavigate?: boolean;
+};
+
+export type RouteLocation<TLocation> = ValidateNavigateOptions<RegisteredRouter, TLocation> & BuildRouteLocationOptions<TLocation>;
 export type RouteLocationBuilder<TSearch, TLocation> = (search?: TSearch) => RouteLocation<TLocation>;
 
-export function getRouteHref<const TLocation>(router: RegisteredRouter, location: RouteLocation<TLocation>) {
-   return router.buildLocation(location as BuildLocationOptions).href;
+export function getRouteHref<
+   TTo extends string | undefined,
+   TFrom extends string = string,
+   TMaskFrom extends string = TFrom,
+   TMaskTo extends string = ''
+>(
+   router: RegisteredRouter,
+   location: ToOptions<RegisteredRouter, TFrom, TTo, TMaskFrom, TMaskTo> & {
+      leaveParams?: boolean;
+      _includeValidateSearch?: boolean;
+      _isNavigate?: boolean;
+   }
+) {
+   return router.buildLocation<RegisteredRouter, TTo, TFrom, TMaskFrom, TMaskTo>(location).href;
 }
 
 export function navigateToRoute<const TLocation>(router: RegisteredRouter, location: RouteLocation<TLocation>, options: RouteNavigationOptions = {}) {

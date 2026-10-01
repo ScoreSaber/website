@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
+import type { Messages } from '../src/shared/i18n/messages';
+
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 
-type Messages = { [key: string]: string | Messages };
 const messagesSchema: z.ZodType<Messages> = z.lazy(() => z.record(z.string(), z.union([z.string(), messagesSchema])));
 
 const options = new Map<string, string>();

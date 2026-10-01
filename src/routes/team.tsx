@@ -33,6 +33,12 @@ type TeamData = {
    TeamMembers: Record<TeamKey, TeamMember[]>;
 };
 type TeamPageData = { ok: true; team: TeamData } | { ok: false };
+type SocialMetadata = {
+   [Social in SocialKey]: {
+      Icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' }>;
+      href: (value: string) => string;
+   };
+};
 
 const TEAM_IMAGE_BASE_URL = 'https://raw.githubusercontent.com/ScoreSaber/scoresaber-team/main/images';
 
@@ -53,7 +59,7 @@ const teamSections: {
    { key: 'PPv3', tone: 'ppv3', removeUmbra: true }
 ];
 
-const toneColor: Record<TeamTone, string> = {
+const toneColor = {
    owner: 'var(--role-owner)',
    admin: 'var(--role-admin)',
    nat: 'var(--role-nat)',
@@ -66,23 +72,15 @@ const toneColor: Record<TeamTone, string> = {
    mod: 'var(--primary)'
 };
 
-const textToneColor: Partial<Record<TeamTone, string>> = {
-   dev: 'var(--foreground)'
-};
+const textToneColor = new Map<TeamTone, string>([['dev', 'var(--foreground)']]);
 
-const memberToneOverrides: Record<string, TeamTone | 'rainbow'> = {
-   umbranox: 'owner',
-   qwasyx: 'rainbow',
-   williums: 'rainbow'
-};
+const memberToneOverrides = new Map<string, TeamTone | 'rainbow'>([
+   ['umbranox', 'owner'],
+   ['qwasyx', 'rainbow'],
+   ['williums', 'rainbow']
+]);
 
-const socialMeta: Record<
-   SocialKey,
-   {
-      Icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' }>;
-      href: (value: string) => string;
-   }
-> = {
+const socialMeta: SocialMetadata = {
    discord: { Icon: Icons.discord, href: (value) => `https://discordapp.com/users/${value}` },
    twitter: { Icon: Icons.twitter, href: (value) => `https://twitter.com/${value}` },
    twitch: { Icon: FaTwitch, href: (value) => `https://twitch.tv/${value}` },
@@ -190,10 +188,10 @@ function TeamSection({
 }
 
 function TeamMemberCard({ member, tone, socialLabels }: { member: TeamMember; tone: TeamTone; socialLabels: Record<SocialKey, string> }) {
-   const override = memberToneOverrides[member.Name.toLowerCase()];
+   const override = memberToneOverrides.get(member.Name.toLowerCase());
    const isRainbow = override === 'rainbow';
    const color = override && override !== 'rainbow' ? toneColor[override] : toneColor[tone];
-   const textColor = override && override !== 'rainbow' ? toneColor[override] : (textToneColor[tone] ?? toneColor[tone]);
+   const textColor = override && override !== 'rainbow' ? toneColor[override] : (textToneColor.get(tone) ?? toneColor[tone]);
    const socials: { key: SocialKey; href: string }[] = [];
    if (member.Discord) socials.push({ key: 'discord', href: socialMeta.discord.href(member.Discord) });
    if (member.Twitter) socials.push({ key: 'twitter', href: socialMeta.twitter.href(member.Twitter) });

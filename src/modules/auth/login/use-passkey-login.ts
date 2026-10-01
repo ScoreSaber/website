@@ -1,6 +1,6 @@
 'use client';
 
-import { startAuthentication, type PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser';
+import { startAuthentication } from '@simplewebauthn/browser';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -16,7 +16,7 @@ export function usePasskeyLogin(redirectTo: string) {
    return useMutation({
       mutationFn: async () => {
          const { sessionId, options } = unwrapAction(await getPasskeyLoginOptions());
-         const response = await startAuthentication({ optionsJSON: options as PublicKeyCredentialRequestOptionsJSON });
+         const response = await startAuthentication({ optionsJSON: options });
          return unwrapAction(await verifyPasskeyLogin({ sessionId, response }));
       },
       onSuccess: async (value) => {

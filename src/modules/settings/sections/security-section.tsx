@@ -3,7 +3,7 @@
 import type { SubmitEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { startRegistration, type PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/browser';
+import { startRegistration } from '@simplewebauthn/browser';
 import { getRouteApi, useRouter } from '@tanstack/react-router';
 import { Result } from 'better-result';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
@@ -314,7 +314,7 @@ function PasskeysRow({ passkeys }: { passkeys: PasskeySummary[] }) {
       setAddPending(true);
       const result = await Result.tryPromise(async () => {
          const options = unwrapAction(await getPasskeyRegistrationOptions());
-         const response = await startRegistration({ optionsJSON: options as PublicKeyCredentialCreationOptionsJSON });
+         const response = await startRegistration({ optionsJSON: options });
          unwrapAction(await verifyPasskeyRegistration({ response }));
       });
 
