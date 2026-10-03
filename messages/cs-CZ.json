@@ -366,7 +366,7 @@
          "emailCallToAction": ""
       },
       "subtitle": "",
-      "metaProviderTooltip": "Přihlásit se přes Meta"
+      "metaProviderTooltip": ""
    },
    "sidebar": {
       "activeRealm": "",
@@ -382,6 +382,7 @@
       "logIn": "",
       "logOut": "",
       "settings": "",
+      "administration": "",
       "more": "",
       "collapse": "",
       "expand": "",
@@ -514,6 +515,15 @@
          "save": "",
          "saveFailed": ""
       },
+      "delete": {
+         "action": "",
+         "title": "",
+         "description": "",
+         "unknownPlayer": "",
+         "unknownMap": "",
+         "success": "",
+         "failed": ""
+      },
       "legacyAccuracy": "",
       "weighted": "",
       "accuracyPreview": "",
@@ -544,6 +554,13 @@
       "replayViewer": "",
       "openReplayNewTab": "",
       "gridAccuracy": "",
+      "gridHintClick": "",
+      "gridHintTap": "",
+      "hand": "",
+      "leftHand": "",
+      "rightHand": "",
+      "sliceAverage": "",
+      "sliceComponents": "",
       "jumpDistance": "",
       "pauses": "",
       "paused": "",
@@ -634,6 +651,13 @@
    "player": {
       "followers": "",
       "following": "",
+      "platformFriends": "",
+      "relationshipsTitle": "",
+      "relationshipsLoadFailed": "",
+      "noFollowers": "",
+      "noFollowing": "",
+      "noPlatformFriends": "",
+      "loadingMore": "",
       "viewSteamProfile": "",
       "livePresence": {
          "live": "",
@@ -673,6 +697,7 @@
       "writeBio": "",
       "bioUpdated": "",
       "follow": "",
+      "followBack": "",
       "unfollow": "",
       "mutual": "",
       "followingStatus": "",
@@ -723,6 +748,46 @@
       "failedToLoadPermissions": "",
       "permissionsUpdated": "",
       "failedToUpdatePermissions": "",
+      "bannedProfileUnavailable": "",
+      "automaticallyUnban": "",
+      "automaticUnbanDate": "",
+      "automaticUnbanDateError": "",
+      "earliestAppealDate": "",
+      "appealDateError": "",
+      "banMetadata": {
+         "created": "",
+         "automaticUnban": "",
+         "disabled": "",
+         "none": "",
+         "legacy": ""
+      },
+      "badges": {
+         "manage": "",
+         "manageDescription": "",
+         "search": "",
+         "empty": "",
+         "loadFailed": "",
+         "badgeId": "",
+         "overridePlaceholder": "",
+         "updated": "",
+         "updateFailed": ""
+      },
+      "merge": {
+         "title": "",
+         "selectSource": "",
+         "selectSourceDescription": "",
+         "samePlayer": "",
+         "description": "",
+         "source": "",
+         "target": "",
+         "changeSource": "",
+         "supportReason": "",
+         "supportReasonPlaceholder": "",
+         "confirm": "",
+         "confirmationText": "",
+         "success": "",
+         "failed": ""
+      },
       "chartUsageTips": "",
       "hideEstimatedData": "",
       "showEstimatedData": "",
@@ -1259,6 +1324,9 @@
          "countryResetQueued": "",
          "countryResetFailed": "",
          "resetCountryDialogDesc": "",
+         "resetCountryPreview": "",
+         "resetCountryNotRight": "",
+         "resetCountryLocationHelp": "",
          "resetCountryAvailableAt": "",
          "resetCountryConfirmText": ""
       },
@@ -1519,6 +1587,48 @@
          "necessaryDescription": ""
       },
       "lastUpdated": ""
+   },
+   "admin": {
+      "title": "",
+      "badges": {
+         "title": "",
+         "description": "",
+         "create": "",
+         "createTitle": "",
+         "createDescription": "",
+         "editTitle": "",
+         "editDescription": "",
+         "edit": "",
+         "delete": "",
+         "deleteTitle": "",
+         "deleteDescription": "",
+         "image": "",
+         "replacementImage": "",
+         "imageRequirements": "",
+         "keepCurrentImage": "",
+         "currentImage": "",
+         "id": "",
+         "badgeDescription": "",
+         "assignments": "",
+         "actions": "",
+         "mobileMetadata": "",
+         "save": "",
+         "empty": "",
+         "created": "",
+         "updated": "",
+         "deleted": "",
+         "createFailed": "",
+         "updateFailed": "",
+         "deleteFailed": ""
+      },
+      "versions": {
+         "title": "",
+         "version": "",
+         "versionPlaceholder": "",
+         "whitelist": "",
+         "updated": "",
+         "updateFailed": ""
+      }
    },
    "oauth": {
       "consent": {

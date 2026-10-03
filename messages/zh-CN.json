@@ -366,7 +366,7 @@
          "emailCallToAction": "新用户注册"
       },
       "subtitle": "登录或创建一个ScoreSaber账户",
-      "metaProviderTooltip": "使用 Meta 登录"
+      "metaProviderTooltip": ""
    },
    "sidebar": {
       "activeRealm": "当前分区",
@@ -382,6 +382,7 @@
       "logIn": "登录",
       "logOut": "退出登录",
       "settings": "设置",
+      "administration": "",
       "more": "更多",
       "collapse": "收起",
       "expand": "展开",
@@ -429,7 +430,7 @@
       "performancePoints": "PP点数",
       "pp": "PP",
       "accuracy": "精准度",
-      "misses": "未砍中",
+      "misses": "",
       "totalPlays": "总游玩次数",
       "actions": "操作",
       "rankRequestActions": "排名申请操作",
@@ -514,6 +515,15 @@
          "save": "",
          "saveFailed": ""
       },
+      "delete": {
+         "action": "",
+         "title": "",
+         "description": "",
+         "unknownPlayer": "",
+         "unknownMap": "",
+         "success": "",
+         "failed": ""
+      },
       "legacyAccuracy": "该成绩是在得分机制修改之前提交的",
       "weighted": "权重{weightedPercent}",
       "accuracyPreview": "",
@@ -544,6 +554,13 @@
       "replayViewer": "回放查看器",
       "openReplayNewTab": "在新标签页中打开回放查看器",
       "gridAccuracy": "精准度网格",
+      "gridHintClick": "",
+      "gridHintTap": "",
+      "hand": "",
+      "leftHand": "",
+      "rightHand": "",
+      "sliceAverage": "",
+      "sliceComponents": "",
       "jumpDistance": "",
       "pauses": "",
       "paused": "",
@@ -634,6 +651,13 @@
    "player": {
       "followers": "Ta关注的",
       "following": "关注Ta的",
+      "platformFriends": "",
+      "relationshipsTitle": "",
+      "relationshipsLoadFailed": "",
+      "noFollowers": "",
+      "noFollowing": "",
+      "noPlatformFriends": "",
+      "loadingMore": "",
       "viewSteamProfile": "查看Steam个人主页",
       "livePresence": {
          "live": "",
@@ -673,6 +697,7 @@
       "writeBio": "撰写您的自我介绍……",
       "bioUpdated": "已成功更新自我介绍",
       "follow": "关注",
+      "followBack": "",
       "unfollow": "取关",
       "mutual": "互相关注",
       "followingStatus": "已关注",
@@ -723,6 +748,46 @@
       "failedToLoadPermissions": "权限加载失败",
       "permissionsUpdated": "权限已更新",
       "failedToUpdatePermissions": "权限更新失败",
+      "bannedProfileUnavailable": "",
+      "automaticallyUnban": "",
+      "automaticUnbanDate": "",
+      "automaticUnbanDateError": "",
+      "earliestAppealDate": "",
+      "appealDateError": "",
+      "banMetadata": {
+         "created": "",
+         "automaticUnban": "",
+         "disabled": "",
+         "none": "",
+         "legacy": ""
+      },
+      "badges": {
+         "manage": "",
+         "manageDescription": "",
+         "search": "",
+         "empty": "",
+         "loadFailed": "",
+         "badgeId": "",
+         "overridePlaceholder": "",
+         "updated": "",
+         "updateFailed": ""
+      },
+      "merge": {
+         "title": "",
+         "selectSource": "",
+         "selectSourceDescription": "",
+         "samePlayer": "",
+         "description": "",
+         "source": "",
+         "target": "",
+         "changeSource": "",
+         "supportReason": "",
+         "supportReasonPlaceholder": "",
+         "confirm": "",
+         "confirmationText": "",
+         "success": "",
+         "failed": ""
+      },
       "chartUsageTips": "图表使用提示",
       "hideEstimatedData": "隐藏估计值",
       "showEstimatedData": "显示估计值",
@@ -1259,6 +1324,9 @@
          "countryResetQueued": "重置国家/地区",
          "countryResetFailed": "重置国家/地区失败",
          "resetCountryDialogDesc": "这将从您的当前位置重新推算您所在的国家/地区。操作成功后，{days} 天内不能再使用重置国家/地区功能",
+         "resetCountryPreview": "",
+         "resetCountryNotRight": "",
+         "resetCountryLocationHelp": "",
          "resetCountryAvailableAt": "您最近重置过您的国家/地区。您可在 <date></date> 再次重置",
          "resetCountryConfirmText": "重置"
       },
@@ -1518,7 +1586,49 @@
          "necessaryTitle": "必需的Cookie",
          "necessaryDescription": "这些 Cookies 对于登录、安全、速率限制，语言、主题、筛选的设置，网站核心功能是必需的。它们永远是启用的。"
       },
-      "lastUpdated": "最后更新：{date}"
+      "lastUpdated": ""
+   },
+   "admin": {
+      "title": "",
+      "badges": {
+         "title": "",
+         "description": "",
+         "create": "",
+         "createTitle": "",
+         "createDescription": "",
+         "editTitle": "",
+         "editDescription": "",
+         "edit": "",
+         "delete": "",
+         "deleteTitle": "",
+         "deleteDescription": "",
+         "image": "",
+         "replacementImage": "",
+         "imageRequirements": "",
+         "keepCurrentImage": "",
+         "currentImage": "",
+         "id": "",
+         "badgeDescription": "",
+         "assignments": "",
+         "actions": "",
+         "mobileMetadata": "",
+         "save": "",
+         "empty": "",
+         "created": "",
+         "updated": "",
+         "deleted": "",
+         "createFailed": "",
+         "updateFailed": "",
+         "deleteFailed": ""
+      },
+      "versions": {
+         "title": "",
+         "version": "",
+         "versionPlaceholder": "",
+         "whitelist": "",
+         "updated": "",
+         "updateFailed": ""
+      }
    },
    "oauth": {
       "consent": {
