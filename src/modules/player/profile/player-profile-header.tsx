@@ -17,7 +17,8 @@ import {
    FaMoon,
    FaShieldAlt,
    FaStar,
-   FaTrophy
+   FaTrophy,
+   FaVolumeMute
 } from 'react-icons/fa';
 import { useTranslations } from 'use-intl';
 
@@ -88,7 +89,8 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
    const { stats } = player;
    const denyahMode = useDenyahMode();
    const playerSummary = buildPlayerSummary(player, 'text');
-   const isActive = !player.inactive && !player.banned;
+   const restricted = player.banned || player.silenced;
+   const isActive = !player.inactive && !restricted;
    const profileAccentStyle = getProfileAccentProperties(customization);
    const hasCustomAccent = profileAccentStyle !== undefined;
    const accentColor = 'var(--profile-accent)';
@@ -227,7 +229,7 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
                      <PlayerAvatar
                         className={cn(
                            'h-24 w-24 rounded-full shadow-lg ring-2',
-                           player.banned ? 'ring-destructive/40 grayscale' : player.inactive ? 'opacity-60 grayscale' : ''
+                           restricted ? 'ring-destructive/40 grayscale' : player.inactive ? 'opacity-60 grayscale' : ''
                         )}
                         width={96}
                         height={96}
@@ -246,7 +248,7 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
                   <Runaway enabled={denyahMode} className="hidden sm:block">
                      <PlayerFollowButton playerId={player.id} />
                   </Runaway>
-                  {!player.banned && <PlayerRelationships player={player} />}
+                  {!restricted && <PlayerRelationships player={player} />}
                </div>
 
                <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5 sm:items-start">
@@ -270,14 +272,14 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
                         {aliases && <PlayerAliases aliases={aliases} playerId={player.id} />}
                      </div>
 
-                     {!player.banned && (
+                     {!restricted && (
                         <StatusBadge tooltip={t('common.performancePoints')} className={ppBadgeClass} style={accentSurfaceStyle}>
                            {formatPP(stats.totalPP)}
                            <span className={cn(ppUnitClass, accentSubtleTextClass)}>{denyahMode ? 'pee pee' : 'pp'}</span>
                         </StatusBadge>
                      )}
 
-                     {player.inactive && !player.banned && (
+                     {player.inactive && !restricted && (
                         <StatusBadge
                            tooltip={t('player.inactiveTooltip')}
                            className="border-border/40 bg-muted/40 text-muted-foreground rounded-md border px-2 py-0.5 text-xs font-medium"
@@ -294,6 +296,16 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
                         >
                            <FaBan className="size-2.5" />
                            {t('player.banned')}
+                        </StatusBadge>
+                     )}
+
+                     {player.silenced && (
+                        <StatusBadge
+                           tooltip={t('player.silencedTooltip')}
+                           className="border-destructive/30 bg-destructive/15 text-destructive rounded-md border px-2 py-0.5 text-xs font-semibold"
+                        >
+                           <FaVolumeMute className="size-2.5" />
+                           {t('player.silenced')}
                         </StatusBadge>
                      )}
                   </div>
@@ -370,7 +382,7 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
                   )}
 
                   {/* stats */}
-                  {!player.banned && (
+                  {!restricted && (
                      <div className="flex flex-col gap-1.5">
                         {customizedStats ? (
                            <ProfileStatsRow
@@ -415,7 +427,7 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
                      </div>
                   )}
 
-                  {!player.banned && (
+                  {!restricted && (
                      <PlayerBadges badges={player.badges} badgeOrder={customization?.badgeOrder} badgeComments={customization?.badgeComments} />
                   )}
                </div>

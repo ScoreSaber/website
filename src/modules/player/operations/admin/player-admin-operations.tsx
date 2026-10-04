@@ -9,14 +9,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
-import { adminResetCountry, banPlayer, unbanPlayer, updateRoleText } from '@/modules/player/actions/user/admin';
+import { adminResetCountry, banPlayer, unbanPlayer, unsilencePlayer, updateRoleText } from '@/modules/player/actions/user/admin';
 import { PlayerBadgeManagerDialog } from '@/modules/player/operations/admin/player-badge-manager-dialog';
 import { PlayerMergeDialog, type AdminMergeTarget } from '@/modules/player/operations/admin/player-merge-dialog';
 import { PlayerPermissionEditor } from '@/modules/player/operations/admin/player-permission-editor';
 import type { OperationAction } from '@/modules/player/operations/operation-action';
 import { ConfirmDialog } from '@/shared/components/confirm-dialog';
 
-type PlayerAdminOperation = 'ban' | 'unban' | 'admin-country' | 'role-text' | 'permissions' | 'badges' | 'merge';
+type PlayerAdminOperation = 'ban' | 'unban' | 'unsilence' | 'admin-country' | 'role-text' | 'permissions' | 'badges' | 'merge';
 
 interface PlayerAdminOperationsProps {
    activeOperation: PlayerAdminOperation | null;
@@ -98,6 +98,10 @@ export function PlayerAdminOperations({
       action.run(() => unbanPlayer(playerId), t('player.playerUnbanned'), t('player.failedToUnban'), closeDialog);
    }
 
+   function handleUnsilence() {
+      action.run(() => unsilencePlayer(playerId), t('player.playerUnsilenced'), t('player.failedToUnsilence'), closeDialog);
+   }
+
    function handleAdminResetCountry() {
       if (!countryValue || countryValue.length !== 2) return;
       action.run(
@@ -125,6 +129,16 @@ export function PlayerAdminOperations({
             confirmLabel={t('player.unbanPlayer')}
             pending={pending}
             onConfirmAction={handleUnban}
+         />
+
+         <ConfirmDialog
+            open={activeOperation === 'unsilence'}
+            onOpenChangeAction={onOpenChangeAction}
+            title={t('player.unsilencePlayer')}
+            description={t('player.unsilenceDialogDesc')}
+            confirmLabel={t('player.unsilencePlayer')}
+            pending={pending}
+            onConfirmAction={handleUnsilence}
          />
 
          <ConfirmDialog

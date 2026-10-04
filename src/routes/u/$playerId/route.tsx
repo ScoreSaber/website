@@ -222,21 +222,22 @@ function PlayerProfileRouteContent({
                      const profileBackgroundImage = profileCustomization.backgroundImage
                         ? versionedImageUrl(profileCustomization.backgroundImage, profileCustomization.backgroundImageVersion)
                         : null;
-                     const profileSections = player.banned
-                        ? []
-                        : buildProfileSections({
-                             player,
-                             history,
-                             scores,
-                             input,
-                             parseSearch,
-                             sanitizedBio,
-                             hasBioContent,
-                             chartMetricIds: profileCustomization.chartMetricIds,
-                             profileCustomization,
-                             sectionOrder: profileCustomization.sectionOrder,
-                             renderScoreAction
-                          });
+                     const profileSections =
+                        player.banned || player.silenced
+                           ? []
+                           : buildProfileSections({
+                                player,
+                                history,
+                                scores,
+                                input,
+                                parseSearch,
+                                sanitizedBio,
+                                hasBioContent,
+                                chartMetricIds: profileCustomization.chartMetricIds,
+                                profileCustomization,
+                                sectionOrder: profileCustomization.sectionOrder,
+                                renderScoreAction
+                             });
 
                      return (
                         <PlayerProfileAccentScope customization={profileCustomization}>
@@ -256,6 +257,7 @@ function PlayerProfileRouteContent({
                                  <PlayerActions
                                     playerId={player.id}
                                     playerBanned={player.banned}
+                                    playerSilenced={player.silenced}
                                     playerPermissions={player.permissions}
                                     playerRole={player.role}
                                     mergeTarget={{
@@ -269,7 +271,7 @@ function PlayerProfileRouteContent({
                                  />
                               }
                            >
-                              {player.banned ? (
+                              {player.banned || player.silenced ? (
                                  <div className="py-6 text-center">
                                     <Separator variant="gradient" className="via-destructive/15 mb-4" />
                                     <p className="text-muted-foreground text-sm">{t('player.bannedProfileUnavailable')}</p>

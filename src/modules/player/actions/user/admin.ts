@@ -36,6 +36,10 @@ const unbanPlayerFn = createServerFn({ method: 'POST' })
    .validator((playerId: string) => playerId)
    .handler(({ data }) => actionResultVoid(api.adminUser.adminUserControllerUnbanPlayer({ id: toInt64PathParam(data) })));
 
+const unsilencePlayerFn = createServerFn({ method: 'POST' })
+   .validator((playerId: string) => playerId)
+   .handler(({ data }) => actionResultVoid(api.adminUser.adminUserControllerUnsilencePlayer({ id: toInt64PathParam(data) })));
+
 const adminResetCountryFn = createServerFn({ method: 'POST' })
    .validator((data: { playerId: string; country: string }) => data)
    .handler(({ data }) =>
@@ -87,6 +91,10 @@ export async function banPlayer(input: BanPlayerInput) {
 
 export async function unbanPlayer(playerId: string) {
    return unbanPlayerFn({ data: playerId });
+}
+
+export async function unsilencePlayer(playerId: string) {
+   return unsilencePlayerFn({ data: playerId });
 }
 
 export async function adminResetCountry(playerId: string, country: string) {

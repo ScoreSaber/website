@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 
 import type { IconType } from 'react-icons';
-import { FaBan, FaCodeBranch, FaFlag, FaGlobe, FaIdBadge, FaMedal, FaLock, FaUndoAlt, FaUsersCog } from 'react-icons/fa';
+import { FaBan, FaCodeBranch, FaFlag, FaGlobe, FaIdBadge, FaMedal, FaLock, FaUndoAlt, FaUsersCog, FaVolumeUp } from 'react-icons/fa';
 import { useTranslations } from 'use-intl';
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -38,6 +38,7 @@ export interface PlayerExtraAction {
 interface PlayerActionsProps {
    playerId: string;
    playerBanned: boolean;
+   playerSilenced: boolean;
    playerPermissions: number;
    playerRole: string | null;
    mergeTarget?: AdminMergeTarget;
@@ -48,6 +49,7 @@ interface PlayerActionsProps {
 export function PlayerActions({
    playerId,
    playerBanned,
+   playerSilenced,
    playerPermissions,
    playerRole,
    mergeTarget,
@@ -81,6 +83,13 @@ export function PlayerActions({
          visible: canBan && !isOwnProfile && playerBanned,
          icon: FaUndoAlt,
          label: t('player.unbanPlayer')
+      },
+      {
+         id: 'unsilence',
+         group: 'primary',
+         visible: canBan && !isOwnProfile && playerSilenced,
+         icon: FaVolumeUp,
+         label: t('player.unsilencePlayer')
       },
       {
          id: 'report',

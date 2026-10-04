@@ -212,6 +212,7 @@ function HoverCardBody({ player, onClose }: { player: PlayerControllerGetPlayerR
                   <PlayerActions
                      playerId={player.id}
                      playerBanned={player.banned}
+                     playerSilenced={player.silenced}
                      playerPermissions={player.permissions}
                      playerRole={player.role}
                      compact
