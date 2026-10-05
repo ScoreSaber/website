@@ -2,7 +2,7 @@
 
 import { useLocation } from '@tanstack/react-router';
 import { Check, Hash } from 'lucide-react';
-import { FaClock, FaDrum, FaLink, FaMusic } from 'react-icons/fa';
+import { FaClock, FaDrum, FaLink, FaMusic, FaPlay } from 'react-icons/fa';
 import { useTranslations } from 'use-intl';
 
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import type { LeaderboardSearchParams, MapLeaderboard } from '@/modules/maps/detail/map-leaderboard-view/map-leaderboard-view-types';
 import { MapReuploadVersionSelection } from '@/modules/maps/detail/map-reupload-version-selection';
 import { BeatSaverKeyPill } from '@/modules/maps/shared/beatsaver-key-pill';
+import { ReplayDialog } from '@/modules/scores/replay-dialog';
 import { LinkedNames } from '@/modules/search/search-link';
 import type { MapControllerGetMapByIdResponse } from '@/shared/api/generated/ApiParams';
 import { CopyButton } from '@/shared/components/copy-button';
@@ -18,6 +19,7 @@ import { FadeInImage } from '@/shared/components/fade-in-image';
 import { Stat } from '@/shared/components/stat';
 import { Time } from '@/shared/components/time';
 import { cn, formatNumber } from '@/shared/format/helpers';
+import { getNoSoloGameModeLabel } from '@/shared/format/strings';
 import { getStatusAccentClass } from '@/shared/format/styling';
 import { isLeaderboardPersonalizationParam } from '@/shared/url-state/persisted-filter-preferences';
 
@@ -61,6 +63,11 @@ export function MapLeaderboardHero({ mapInfo, leaderboard, linkSearchParams }: M
                      activeLeaderboardId={leaderboard.id}
                      linkSearchParams={linkSearchParams}
                      triggerVariant="icon"
+                  />
+                  <MapViewer
+                     mapKey={mapInfo.bsid}
+                     difficulty={leaderboard.difficulty}
+                     gameMode={leaderboard.gameMode}
                   />
                </div>
 
@@ -182,6 +189,31 @@ function CopyMapHashButton({ hash }: { hash: string }) {
          </TooltipTrigger>
          <TooltipContent>{t('map.copyMapHash')}</TooltipContent>
       </Tooltip>
+   );
+}
+
+function MapViewer({ mapKey, difficulty, gameMode }: { mapKey?: string | null; difficulty?: number | null; gameMode?: string | null }) {
+   const t = useTranslations();
+
+   if (!mapKey) {
+      return null;
+   }
+
+   const characteristicParam = encodeURIComponent(gameMode ? getNoSoloGameModeLabel(gameMode) : '');
+   const difficultyParam = encodeURIComponent(difficulty != null ? difficulty : '');
+
+   return (
+      <ReplayDialog
+         mapId={`https://watch.scoresaber.com/?map=${encodeURIComponent(mapKey)}&difficulty=${difficultyParam}&characteristic=${characteristicParam}`}
+         tooltip={t('score.replayViewer')}
+         trigger={({ replayUrl, openReplayAction }) => (
+            <Button variant="secondary" size="icon-xs" asChild className="border-border/70 h-6 w-6 cursor-pointer rounded-full border">
+               <a href={replayUrl} target="_blank" rel="noopener noreferrer" onClick={openReplayAction} aria-label={t('score.replayViewer')}>
+                  <FaPlay className="size-2.5" />
+               </a>
+            </Button>
+         )}
+      />
    );
 }
 
