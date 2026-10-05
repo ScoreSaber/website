@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 import { Separator } from '@/components/ui/separator';
 
+import { useAuth } from '@/modules/auth';
 import { readAuthCookie } from '@/modules/auth/actions/session.server';
 import type { MetricKey } from '@/modules/player/chart/chart-types';
 import { PlayerChartLazy as PlayerChart } from '@/modules/player/chart/player-chart-lazy';
@@ -40,6 +41,7 @@ import { NotFoundCard } from '@/shared/components/error/not-found-card';
 import { PageError } from '@/shared/components/error/page-error';
 import { Time } from '@/shared/components/time';
 import { cn, formatAccuracy, formatNumber, formatPP } from '@/shared/format/helpers';
+import Permissions from '@/shared/permissions';
 import { apiResult, optionalApi, optionalApiData, pageApiData } from '@/shared/result/api';
 import { hasRichTextContent, sanitizeRichTextHtml } from '@/shared/rich-text/server';
 import { buildSeoHead } from '@/shared/seo/metadata';
@@ -89,7 +91,7 @@ const getPlayerProfilePageData = createServerFn({ method: 'GET' })
       const [profileResult, scores, connections] = await Promise.all([
          pageApiData(profileApi.player.playerControllerGetPlayerProfile({ id: playerId })),
          optionalApiData(
-            publicApi.player.playerControllerGetPlayerScores({
+            profileApi.player.playerControllerGetPlayerScores({
                id: playerId,
                limit: 8,
                page: data.search.page ?? 1,
@@ -185,6 +187,7 @@ function PlayerProfileRouteContent({
 }) {
    const { result, scores, history, aliases, patreonConnected, plusOneRawPP, sanitizedBio, hasBioContent, banMetadata } = data;
    const t = useTranslations();
+   const { user } = useAuth();
    const denyahContainerRef = useRef<HTMLDivElement | null>(null);
 
    useVanityBrowserUrl(result.ok ? result.data.vanity : null);
@@ -192,6 +195,7 @@ function PlayerProfileRouteContent({
    if (!result.ok) return <PageError status={result.status} />;
 
    const player = result.data;
+   const restricted = (player.banned || player.silenced) && !Permissions.checkPermissionNumber(user?.permissions ?? 0, Permissions.security.ADMIN);
    const denyahMode = isDenyah(player.id);
    const currentDenyahSection =
       denyahMode && history?.length ? computeDenyahSections(getSortedPlayerHistory(history).map((entry) => entry.rank)).at(-1) : undefined;
@@ -222,22 +226,21 @@ function PlayerProfileRouteContent({
                      const profileBackgroundImage = profileCustomization.backgroundImage
                         ? versionedImageUrl(profileCustomization.backgroundImage, profileCustomization.backgroundImageVersion)
                         : null;
-                     const profileSections =
-                        player.banned || player.silenced
-                           ? []
-                           : buildProfileSections({
-                                player,
-                                history,
-                                scores,
-                                input,
-                                parseSearch,
-                                sanitizedBio,
-                                hasBioContent,
-                                chartMetricIds: profileCustomization.chartMetricIds,
-                                profileCustomization,
-                                sectionOrder: profileCustomization.sectionOrder,
-                                renderScoreAction
-                             });
+                     const profileSections = restricted
+                        ? []
+                        : buildProfileSections({
+                             player,
+                             history,
+                             scores,
+                             input,
+                             parseSearch,
+                             sanitizedBio,
+                             hasBioContent,
+                             chartMetricIds: profileCustomization.chartMetricIds,
+                             profileCustomization,
+                             sectionOrder: profileCustomization.sectionOrder,
+                             renderScoreAction
+                          });
 
                      return (
                         <PlayerProfileAccentScope customization={profileCustomization}>
@@ -274,7 +277,7 @@ function PlayerProfileRouteContent({
                               {player.banned || player.silenced ? (
                                  <div className="py-6 text-center">
                                     <Separator variant="gradient" className="via-destructive/15 mb-4" />
-                                    <p className="text-muted-foreground text-sm">{t('player.bannedProfileUnavailable')}</p>
+                                    {restricted && <p className="text-muted-foreground text-sm">{t('player.bannedProfileUnavailable')}</p>}
                                     {banMetadata.visible && (
                                        <div className="border-destructive/25 bg-destructive/5 mx-auto mt-4 max-w-2xl rounded-md border p-4 text-left">
                                           {banMetadata.record ? (

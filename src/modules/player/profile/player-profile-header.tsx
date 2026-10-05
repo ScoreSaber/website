@@ -25,6 +25,7 @@ import { useTranslations } from 'use-intl';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
+import { useAuth } from '@/modules/auth';
 import { useDenyahMode } from '@/modules/player/denyah/denyah-mode-context';
 import { Runaway } from '@/modules/player/denyah/runaway';
 import { PlayerFollowButton } from '@/modules/player/operations/member/player-follow-button';
@@ -89,7 +90,9 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
    const { stats } = player;
    const denyahMode = useDenyahMode();
    const playerSummary = buildPlayerSummary(player, 'text');
-   const restricted = player.banned || player.silenced;
+   const { user } = useAuth();
+   const moderated = player.banned || player.silenced;
+   const restricted = moderated && !Permissions.checkPermissionNumber(user?.permissions ?? 0, Permissions.security.ADMIN);
    const isActive = !player.inactive && !restricted;
    const profileAccentStyle = getProfileAccentProperties(customization);
    const hasCustomAccent = profileAccentStyle !== undefined;
@@ -229,7 +232,7 @@ export function PlayerProfileHeader({ player, aliases, actions, customization, p
                      <PlayerAvatar
                         className={cn(
                            'h-24 w-24 rounded-full shadow-lg ring-2',
-                           restricted ? 'ring-destructive/40 grayscale' : player.inactive ? 'opacity-60 grayscale' : ''
+                           moderated ? 'ring-destructive/40 grayscale' : player.inactive ? 'opacity-60 grayscale' : ''
                         )}
                         width={96}
                         height={96}
