@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 ARG VITE_PLUS_VERSION=0.2.8
-ARG NODE_VERSION=24.15.0
+ARG NODE_VERSION=24.22.1
 
 FROM ghcr.io/voidzero-dev/vite-plus:${VITE_PLUS_VERSION} AS builder
 
