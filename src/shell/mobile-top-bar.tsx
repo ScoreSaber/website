@@ -13,6 +13,7 @@ import { useAuth } from '@/modules/auth';
 import { PlayerAvatar } from '@/modules/player/shared/player-avatar';
 import { Image } from '@/shared/components/image';
 import { cn } from '@/shared/format/helpers';
+import { useDesktopLayout } from '@/shared/ui-adjacent/viewport';
 import { SidebarNav } from '@/shell/sidebar-nav';
 import { useHideOnScroll } from '@/shell/use-hide-on-scroll';
 
@@ -23,6 +24,8 @@ export function MobileTopBar() {
    const { user } = useAuth();
    const [open, setOpen] = useState(false);
    const hidden = useHideOnScroll();
+   const desktop = useDesktopLayout('lg');
+   if (desktop) return null;
 
    return (
       <>

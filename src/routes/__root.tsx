@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 
 import type { ReactNode } from 'react';
 
+import { queryOptions } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie } from '@tanstack/react-start/server';
@@ -19,12 +20,13 @@ import { BswcLiveNotice } from '@/modules/home/bswc-promo-section';
 import type { RouterContext } from '@/router';
 import { api } from '@/shared/api/server-api';
 import { cn } from '@/shared/format/helpers';
+import { messagesSchema, type Messages } from '@/shared/i18n/messages';
 import { optionalApi } from '@/shared/result/api';
 import { absoluteSiteUrl, SITE_DESCRIPTION, SITE_NAME, buildSeoHead } from '@/shared/seo/metadata';
 import { parseServerTheme, THEME_COOKIE_NAME, THEME_MEDIA_QUERY, THEME_STORAGE_KEY } from '@/shared/ui-adjacent/theme';
 import { optionalSearchParamString } from '@/shared/url-state/params';
 import { AppShell } from '@/shell/app-shell';
-import { isMacRequest } from '@/shell/platform.server';
+import { isMacRequest, isMobileRequest } from '@/shell/platform.server';
 import { parseSidebarCollapsedCookie, SIDEBAR_COLLAPSED_COOKIE_NAME } from '@/shell/sidebar-state';
 
 const themeInitScript = `(function(){var theme='system';try{var stored=localStorage.getItem('${THEME_STORAGE_KEY}');if(stored==='light'||stored==='dark'||stored==='system')theme=stored}catch(e){}var resolved=theme==='system'?(window.matchMedia('${THEME_MEDIA_QUERY}').matches?'dark':'light'):theme;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);root.style.colorScheme=resolved;try{document.cookie='${THEME_COOKIE_NAME}='+theme+'; Path=/; Max-Age=31536000; SameSite=Lax'}catch(e){}})()`;
@@ -65,6 +67,7 @@ const getRootShellData = createServerFn({ method: 'GET' }).handler(async () => {
       initialTheme,
       sidebarCollapsed,
       isMac: isMacRequest(),
+      isMobile: isMobileRequest(),
       locale: await getLocale(),
       visibleLocales: getVisibleLocales(),
       bswc,
@@ -75,6 +78,28 @@ const getRootShellData = createServerFn({ method: 'GET' }).handler(async () => {
 });
 
 const getRouteMessages = createServerFn({ method: 'GET' }).handler(() => getMessages());
+const rootMessagesQuery = (locale: string) =>
+   queryOptions({ queryKey: ['root-messages', locale], queryFn: () => getRouteMessages(), staleTime: Infinity });
+
+const MESSAGES_SCRIPT_ID = 'intl-messages';
+const serializedMessages = new WeakMap<Messages, string>();
+let hydratedMessagesJson: string | undefined;
+
+function readHydratedMessagesJson() {
+   hydratedMessagesJson ??= document.getElementById(MESSAGES_SCRIPT_ID)?.textContent ?? '{}';
+   return hydratedMessagesJson;
+}
+
+function getMessagesJson(messages: Messages) {
+   if (!import.meta.env.SSR) return readHydratedMessagesJson();
+
+   let json = serializedMessages.get(messages);
+   if (!json) {
+      json = JSON.stringify(messages).replaceAll('<', '\\u003c');
+      serializedMessages.set(messages, json);
+   }
+   return json;
+}
 
 export const Route = createRootRouteWithContext<RouterContext>()({
    validateSearch: (search) => rootSearchSchema.parse(search),
@@ -86,13 +111,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
             queryFn: () => getRootShellData(),
             staleTime: ROOT_DATA_STALE_MS
          });
-         const messages = await context.queryClient.ensureQueryData({
-            queryKey: ['root-messages', shell.locale],
-            queryFn: () => getRouteMessages(),
-            staleTime: Infinity
-         });
+         await context.queryClient.ensureQueryData(rootMessagesQuery(shell.locale));
 
-         return { ...shell, messages };
+         return shell;
       }
    },
    preload: false,
@@ -135,22 +156,26 @@ function RootComponent() {
    const previewBswcLive = search.bswcLive === '1';
 
    if (!queryClient.getQueryData(ROOT_SHELL_QUERY_KEY)) {
-      const { messages: _, ...shell } = data;
-      queryClient.setQueryData(ROOT_SHELL_QUERY_KEY, shell);
+      queryClient.setQueryData(ROOT_SHELL_QUERY_KEY, data);
    }
-   if (!queryClient.getQueryData(['root-messages', data.locale])) {
-      queryClient.setQueryData(['root-messages', data.locale], data.messages);
+   const messagesQueryKey = rootMessagesQuery(data.locale).queryKey;
+   let messages = queryClient.getQueryData(messagesQueryKey);
+   if (!messages) {
+      const hydratedMessages = messagesSchema.parse(JSON.parse(readHydratedMessagesJson()));
+      queryClient.setQueryData(messagesQueryKey, hydratedMessages);
+      messages = hydratedMessages;
    }
 
    return (
-      <RootDocument locale={data.locale} initialTheme={data.initialTheme} debugReactScan={data.debugReactScan}>
-         <IntlProvider locale={data.locale} messages={data.messages} timeZone="UTC">
+      <RootDocument locale={data.locale} initialTheme={data.initialTheme} debugReactScan={data.debugReactScan} messages={messages}>
+         <IntlProvider locale={data.locale} messages={messages} timeZone="UTC">
             <AppShell
                initialUser={data.user}
-               messages={data.messages}
+               messages={messages}
                visibleLocales={data.visibleLocales}
                initialSidebarCollapsed={data.sidebarCollapsed}
                isMac={data.isMac}
+               isMobileRequest={data.isMobile}
                queryClient={queryClient}
                debugBreakpoints={data.debugBreakpoints}
                debugPageBackground={data.debugPageBackground}
@@ -167,11 +192,13 @@ function RootDocument({
    locale,
    initialTheme,
    debugReactScan,
+   messages,
    children
 }: {
    locale: string;
    initialTheme: string | null;
    debugReactScan: boolean;
+   messages: Messages;
    children: ReactNode;
 }) {
    preconnect('https://cdn.scoresaber.com');
@@ -195,6 +222,7 @@ function RootDocument({
             <noscript>
                <style dangerouslySetInnerHTML={{ __html: preloaderNoScriptStyles }} />
             </noscript>
+            <script id={MESSAGES_SCRIPT_ID} type="application/json" dangerouslySetInnerHTML={{ __html: getMessagesJson(messages) }} />
             <HeadContent />
             {debugReactScan && <script src="https://unpkg.com/react-scan/dist/auto.global.js" crossOrigin="anonymous" async />}
          </head>

@@ -1,5 +1,7 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
+
 import { getRouteApi, useLocation } from '@tanstack/react-router';
 import { ChevronLeft, ChevronRight, CircleEllipsis, LogIn, Search } from 'lucide-react';
 import { useTranslations } from 'use-intl';
@@ -16,6 +18,7 @@ import { useOmniSearch } from '@/modules/search/search-provider';
 import { Image } from '@/shared/components/image';
 import { cn } from '@/shared/format/helpers';
 import Permissions from '@/shared/permissions';
+import { useDesktopLayout } from '@/shared/ui-adjacent/viewport';
 import { isNavActive, navItems, secondaryItems } from '@/shell/nav-data';
 import { NavLink } from '@/shell/nav-link';
 import { SidebarNav } from '@/shell/sidebar-nav';
@@ -190,8 +193,17 @@ function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
    );
 }
 
+const subscribeNothing = () => () => {};
+
 export function Sidebar() {
    const { collapsed, toggle } = useSidebar();
+   const desktop = useDesktopLayout('lg');
+   const hydrated = useSyncExternalStore(
+      subscribeNothing,
+      () => true,
+      () => false
+   );
+   if (!desktop) return null;
 
    return (
       <aside
@@ -209,7 +221,7 @@ export function Sidebar() {
                   collapsed ? 'opacity-100' : 'opacity-0 pointer-events-none'
                )}
             >
-               <CollapsedSidebar onExpand={toggle} />
+               {(collapsed || hydrated) && <CollapsedSidebar onExpand={toggle} />}
             </div>
             <div
                aria-hidden={collapsed}
@@ -219,7 +231,7 @@ export function Sidebar() {
                   collapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'
                )}
             >
-               <ExpandedSidebar onCollapse={toggle} />
+               {(!collapsed || hydrated) && <ExpandedSidebar onCollapse={toggle} />}
             </div>
          </div>
       </aside>

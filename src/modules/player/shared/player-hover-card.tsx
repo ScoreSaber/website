@@ -39,13 +39,6 @@ export function PlayerHoverCard({ playerId, children }: PlayerHoverCardProps) {
    const [open, setOpen] = useState(false);
    const suppressHoverOpenRef = useRef(false);
 
-   const { data: player, isLoading: loading } = useQuery({
-      queryKey: ['playerHoverCard', playerId],
-      queryFn: () => optionalApiData(api.player.playerControllerGetPlayer({ id: toInt64PathParam(playerId) })),
-      enabled: open,
-      staleTime: 5 * 60 * 1000
-   });
-
    function handleOpenChange(nextOpen: boolean) {
       if (nextOpen && suppressHoverOpenRef.current) return;
       if (!nextOpen && hasOpenChildOverlay()) return;
@@ -87,16 +80,28 @@ export function PlayerHoverCard({ playerId, children }: PlayerHoverCardProps) {
             onEscapeKeyDown={() => setOpen(false)}
             onInteractOutside={handleInteractOutside}
          >
-            {loading && !player ? (
-               <div className="flex items-center justify-center py-4">
-                  <div className="border-primary h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
-               </div>
-            ) : player ? (
-               <HoverCardBody player={player} onClose={() => setOpen(false)} />
-            ) : null}
+            <HoverCardPlayer playerId={playerId} onClose={() => setOpen(false)} />
          </HoverCardContent>
       </HoverCard>
    );
+}
+
+function HoverCardPlayer({ playerId, onClose }: { playerId: string; onClose: () => void }) {
+   const { data: player, isLoading: loading } = useQuery({
+      queryKey: ['playerHoverCard', playerId],
+      queryFn: () => optionalApiData(api.player.playerControllerGetPlayer({ id: toInt64PathParam(playerId) })),
+      staleTime: 5 * 60 * 1000
+   });
+
+   if (loading && !player) {
+      return (
+         <div className="flex items-center justify-center py-4">
+            <div className="border-primary h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
+         </div>
+      );
+   }
+
+   return player ? <HoverCardBody player={player} onClose={onClose} /> : null;
 }
 
 function hasOpenChildOverlay() {

@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { useOmniSearch } from '@/modules/search/search-provider';
 import { cn } from '@/shared/format/helpers';
+import { useDesktopLayout } from '@/shared/ui-adjacent/viewport';
 import { bottomBarItems, isNavActive } from '@/shell/nav-data';
 import { NavLink } from '@/shell/nav-link';
 import { useHideOnScroll } from '@/shell/use-hide-on-scroll';
@@ -17,6 +18,8 @@ export function MobileBottomBar() {
    const hidden = useHideOnScroll();
    const { setOpen: setSearchOpen } = useOmniSearch();
    const tNav = useTranslations('nav');
+   const desktop = useDesktopLayout('lg');
+   if (desktop) return null;
 
    return (
       <nav

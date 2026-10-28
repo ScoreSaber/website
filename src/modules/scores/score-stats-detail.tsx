@@ -206,8 +206,10 @@ function formatHandPair(left: number, right: number, leftLabel: string, rightLab
    return `${formatNumber(left)}${leftLabel} / ${formatNumber(right)}${rightLabel}`;
 }
 
+const compactDecimalFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+
 function formatCompactDecimal(value: number) {
-   return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+   return compactDecimalFormat.format(value);
 }
 
 function formatPauseDuration(seconds: number) {

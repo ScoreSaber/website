@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Tooltip as TooltipPrimitive } from 'radix-ui';
+import { Slot, Tooltip as TooltipPrimitive } from 'radix-ui';
 
 import { cn } from '@/shared/format/helpers';
 
@@ -12,6 +12,7 @@ function TooltipProvider({ delayDuration = 300, ...props }: React.ComponentProps
 
 type TooltipState = {
    isPointerOver: React.RefObject<boolean>;
+   serverClosed: boolean;
 };
 
 const TooltipContext = React.createContext<TooltipState | null>(null);
@@ -31,9 +32,10 @@ function Tooltip({
 
    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
 
-   const tooltipState = React.useMemo<TooltipState>(() => ({ isPointerOver }), []);
-
    const open = isControlled ? controlledOpen : uncontrolledOpen;
+   const serverClosed = import.meta.env.SSR && !open;
+   const tooltipState = React.useMemo<TooltipState>(() => ({ isPointerOver, serverClosed }), [serverClosed]);
+
    const onOpenChange = React.useCallback(
       (nextOpen: boolean) => {
          if (suppressFocusOpen && nextOpen && !isPointerOver.current) {
@@ -50,9 +52,13 @@ function Tooltip({
 
    return (
       <TooltipContext.Provider value={tooltipState}>
-         <TooltipPrimitive.Root data-slot="tooltip" open={open} onOpenChange={onOpenChange} {...props}>
-            {children}
-         </TooltipPrimitive.Root>
+         {serverClosed ? (
+            children
+         ) : (
+            <TooltipPrimitive.Root data-slot="tooltip" open={open} onOpenChange={onOpenChange} {...props}>
+               {children}
+            </TooltipPrimitive.Root>
+         )}
       </TooltipContext.Provider>
    );
 }
@@ -78,6 +84,15 @@ function TooltipTrigger({ onPointerEnter, onPointerLeave, children, asChild, ...
       [tooltip, onPointerLeave]
    );
 
+   if (tooltip?.serverClosed) {
+      const Comp = asChild ? Slot.Root : 'button';
+      return (
+         <Comp data-state="closed" data-slot="tooltip-trigger" {...props}>
+            {children}
+         </Comp>
+      );
+   }
+
    return (
       <TooltipPrimitive.Trigger
          data-slot="tooltip-trigger"
@@ -92,6 +107,9 @@ function TooltipTrigger({ onPointerEnter, onPointerLeave, children, asChild, ...
 }
 
 function TooltipContent({ className, sideOffset = 0, children, style, ...props }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+   const tooltip = React.useContext(TooltipContext);
+   if (tooltip?.serverClosed) return null;
+
    return (
       <TooltipPrimitive.Portal>
          <TooltipPrimitive.Content

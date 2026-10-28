@@ -1,6 +1,10 @@
+import { z } from 'zod';
+
 export interface Messages {
    [key: string]: string | Messages;
 }
+
+export const messagesSchema: z.ZodType<Messages> = z.lazy(() => z.record(z.string(), z.union([z.string(), messagesSchema])));
 
 export function mergeMessages(base: Messages, override: Messages): Messages {
    const merged: Messages = {};

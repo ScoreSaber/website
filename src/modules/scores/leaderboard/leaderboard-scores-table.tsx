@@ -24,6 +24,7 @@ import { cn, formatNumber, getHmdName, isLegacyAccuracyScore } from '@/shared/fo
 import { starsToPP } from '@/shared/format/star-conversion';
 import { isLeaderboardRanked } from '@/shared/format/styling';
 import Permissions from '@/shared/permissions';
+import { useDesktopLayout } from '@/shared/ui-adjacent/viewport';
 
 // only the scoring bits, so both map-detail leaderboards and score leaderboards fit
 export type ScoredLeaderboard = Pick<LeaderboardControllerGetLeaderboardByIdResponse, 'maxScore' | 'realm'>;
@@ -101,6 +102,7 @@ function LeaderboardScoreCard({
    const { user } = useAuth();
    const [detailsExpanded, setDetailsExpanded] = useState(false);
    const [historyExpanded, setHistoryExpanded] = useState(false);
+   const desktop = useDesktopLayout('md');
    const legacyAccuracy = isLegacyAccuracyScore(score.createdAt);
    const fcPPContext = isRanked
       ? {
@@ -149,89 +151,90 @@ function LeaderboardScoreCard({
                isHighlighted && 'border-primary'
             )}
          >
-            {/* mobile: stacked layout */}
-            <div className="md:hidden">
-               {/* top bar: rank / player / devices */}
-               <div className="mb-1 flex w-full items-center justify-between text-sm">
-                  <span className="flex items-center">
-                     <FaGlobeAmericas className="text-muted-foreground mr-1 size-4" />
-                     {rankDisplay}
-                  </span>
-                  <div className="flex items-center gap-2">
+            {!desktop && (
+               <div className="md:hidden">
+                  {/* top bar: rank / player / devices */}
+                  <div className="mb-1 flex w-full items-center justify-between text-sm">
+                     <span className="flex items-center">
+                        <FaGlobeAmericas className="text-muted-foreground mr-1 size-4" />
+                        {rankDisplay}
+                     </span>
+                     <div className="flex items-center gap-2">
+                        <span className="relative inline-flex shrink-0">
+                           <PlayerAvatar
+                              src={score.player.avatar}
+                              version={score.player.avatarVersion}
+                              alt={score.player.name}
+                              width={28}
+                              height={28}
+                              className="shrink-0 rounded-full"
+                           />
+                           <PlayerListLivePresenceIndicator playerId={score.player.id} className="absolute -bottom-0.5 left-[70%] z-10" />
+                        </span>
+                        <PlayerLink player={score.player} />
+                     </div>
+                     {deviceIcons ?? <span />}
+                  </div>
+
+                  {/* stats */}
+                  <ScoreStats
+                     score={score}
+                     showAccuracy={showAccuracy}
+                     showPP={isRanked}
+                     legacyAccuracy={legacyAccuracy}
+                     accuracyPPContext={fcPPContext}
+                     className="mx-auto mt-0 max-w-80 flex-row flex-wrap gap-1.5"
+                     timeSet={score.createdAt}
+                  />
+               </div>
+            )}
+
+            {desktop && (
+               <div className="hidden md:flex md:items-center md:justify-between">
+                  <div className="flex items-center gap-3">
+                     <div className={cn('flex shrink-0 flex-col items-center gap-0.5', relativeRank != null ? 'w-24' : 'w-16')}>
+                        <span className="flex items-center gap-1 text-sm">
+                           <FaGlobeAmericas className="text-muted-foreground size-3" />
+                           {rankDisplay}
+                        </span>
+                        <span className="text-muted-foreground text-[11px]">
+                           <Time
+                              short
+                              date={score.createdAt}
+                              longRelativeClassName="text-(length:--short-time-font-size)"
+                              shortFitTargetLength={12}
+                              minShortFitScale={0.85}
+                           />
+                        </span>
+                     </div>
                      <span className="relative inline-flex shrink-0">
                         <PlayerAvatar
                            src={score.player.avatar}
                            version={score.player.avatarVersion}
                            alt={score.player.name}
-                           width={28}
-                           height={28}
+                           width={32}
+                           height={32}
                            className="shrink-0 rounded-full"
                         />
                         <PlayerListLivePresenceIndicator playerId={score.player.id} className="absolute -bottom-0.5 left-[70%] z-10" />
                      </span>
-                     <PlayerLink player={score.player} />
+                     <div className="min-w-0 flex-1">
+                        <PlayerLink player={score.player} />
+                        {deviceIcons && <div className="pt-0.5">{deviceIcons}</div>}
+                     </div>
                   </div>
-                  {deviceIcons ?? <span />}
+
+                  <ScoreStats
+                     score={score}
+                     showAccuracy={showAccuracy}
+                     showPP={isRanked}
+                     legacyAccuracy={legacyAccuracy}
+                     accuracyPPContext={fcPPContext}
+                     className="mt-0 items-end"
+                  />
                </div>
+            )}
 
-               {/* stats */}
-               <ScoreStats
-                  score={score}
-                  showAccuracy={showAccuracy}
-                  showPP={isRanked}
-                  legacyAccuracy={legacyAccuracy}
-                  accuracyPPContext={fcPPContext}
-                  className="mx-auto mt-0 max-w-80 flex-row flex-wrap gap-1.5"
-                  timeSet={score.createdAt}
-               />
-            </div>
-
-            {/* desktop: horizontal layout */}
-            <div className="hidden md:flex md:items-center md:justify-between">
-               <div className="flex items-center gap-3">
-                  <div className={cn('flex shrink-0 flex-col items-center gap-0.5', relativeRank != null ? 'w-24' : 'w-16')}>
-                     <span className="flex items-center gap-1 text-sm">
-                        <FaGlobeAmericas className="text-muted-foreground size-3" />
-                        {rankDisplay}
-                     </span>
-                     <span className="text-muted-foreground text-[11px]">
-                        <Time
-                           short
-                           date={score.createdAt}
-                           longRelativeClassName="text-(length:--short-time-font-size)"
-                           shortFitTargetLength={12}
-                           minShortFitScale={0.85}
-                        />
-                     </span>
-                  </div>
-                  <span className="relative inline-flex shrink-0">
-                     <PlayerAvatar
-                        src={score.player.avatar}
-                        version={score.player.avatarVersion}
-                        alt={score.player.name}
-                        width={32}
-                        height={32}
-                        className="shrink-0 rounded-full"
-                     />
-                     <PlayerListLivePresenceIndicator playerId={score.player.id} className="absolute -bottom-0.5 left-[70%] z-10" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                     <PlayerLink player={score.player} />
-                     {deviceIcons && <div className="pt-0.5">{deviceIcons}</div>}
-                  </div>
-               </div>
-
-               <ScoreStats
-                  score={score}
-                  showAccuracy={showAccuracy}
-                  showPP={isRanked}
-                  legacyAccuracy={legacyAccuracy}
-                  accuracyPPContext={fcPPContext}
-                  className="mt-0 items-end"
-               />
-            </div>
-
-            {/* actions */}
             {hasBottomActions && <Separator variant="gradient" className="absolute right-4 bottom-8 left-4 md:hidden" />}
             <ScoreCardActions
                score={score}

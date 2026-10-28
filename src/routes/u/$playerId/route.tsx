@@ -43,7 +43,7 @@ import { Time } from '@/shared/components/time';
 import { cn, formatAccuracy, formatNumber, formatPP } from '@/shared/format/helpers';
 import Permissions from '@/shared/permissions';
 import { apiResult, optionalApi, optionalApiData, pageApiData } from '@/shared/result/api';
-import { hasRichTextContent, sanitizeRichTextHtml } from '@/shared/rich-text/server';
+import { sanitizeRichTextHtml } from '@/shared/rich-text/server';
 import { buildSeoHead } from '@/shared/seo/metadata';
 import { isPageNumber, isPlayerId, isVanitySlug, ScoreEnum, requestOrNotFound } from '@/shared/url-state/params';
 import type { SearchParamsRecord } from '@/shared/url-state/search-params';
@@ -132,7 +132,7 @@ const getPlayerProfilePageData = createServerFn({ method: 'GET' })
          patreonConnected: connections?.some((connection) => connection.provider === 'PATREON' && connection.state === 'CONNECTED') ?? false,
          plusOneRawPP: player.stats.plusOnePP,
          sanitizedBio,
-         hasBioContent: hasRichTextContent(sanitizedBio),
+         hasBioContent: sanitizedBio !== '',
          banMetadata
       };
    });

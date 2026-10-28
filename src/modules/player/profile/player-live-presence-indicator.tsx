@@ -72,11 +72,10 @@ export function PlayerListLivePresenceIndicator({ playerId, className }: PlayerL
    return <PlayerLivePresenceIndicatorContent playerId={playerId} className={className} size="compact" ludus={ludus} />;
 }
 
-function useLivePlayerId(playerId: string, hasRooms: boolean) {
+function useLivePlayerId(playerId: string) {
    const { data: aliases } = useQuery({
       queryKey: ['livePlayerIdAliases'],
       queryFn: () => optionalApiData(api.player.playerControllerGetLivePlayerIdAliases()),
-      enabled: hasRooms,
       staleTime: 15_000,
       refetchInterval: 30_000
    });
@@ -84,13 +83,19 @@ function useLivePlayerId(playerId: string, hasRooms: boolean) {
    return aliases?.find((alias) => alias.playerId === playerId)?.livePlayerId ?? playerId;
 }
 
-function PlayerLivePresenceIndicatorContent({
+function PlayerLivePresenceIndicatorContent(props: PlayerLivePresenceIndicatorProps & { ludus: PlayerLivePresenceState }) {
+   if (props.ludus.status !== 'connected' || props.ludus.rooms.length === 0) return null;
+
+   return <RoomPlayerLivePresenceIndicator {...props} />;
+}
+
+function RoomPlayerLivePresenceIndicator({
    playerId,
    className,
    size = 'default',
    ludus
 }: PlayerLivePresenceIndicatorProps & { ludus: PlayerLivePresenceState }) {
-   const livePlayerId = useLivePlayerId(playerId, ludus.rooms.length > 0);
+   const livePlayerId = useLivePlayerId(playerId);
    const matchId = getPublicPlayerMatchId(livePlayerId);
    const presence = useMemo(() => getLudusPlayerPresence(ludus, livePlayerId, matchId), [ludus, livePlayerId, matchId]);
 

@@ -1,6 +1,3 @@
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
 import type {
    LeaderboardControllerGetLeaderboardByIdResponse,
    LeaderboardControllerGetLeaderboardScoresByIdDataItem,
@@ -9,22 +6,23 @@ import type {
 import { getDifficultyLabel } from '@/shared/format/strings';
 import { isLeaderboardRanked } from '@/shared/format/styling';
 
+export { cn } from 'cn';
+
 export function rankToPage(rank: number, perPage: number) {
    return Math.floor((rank + perPage - 1) / perPage);
 }
 
-export function cn(...inputs: ClassValue[]) {
-   return twMerge(clsx(inputs));
-}
+const ppFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const numberFormat = new Intl.NumberFormat('en-US');
 
 export function formatPP(pp: number) {
    if (!Number.isFinite(pp)) return '0.00';
-   return pp.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+   return ppFormat.format(pp);
 }
 
 export function formatNumber(num: number) {
    if (!Number.isFinite(num)) return '0';
-   return num.toLocaleString('en-US');
+   return numberFormat.format(num);
 }
 
 export function formatAccuracy(acc: number) {

@@ -15,6 +15,7 @@ import { TranslationContextHighlighter } from '@/shared/i18n/translation-context
 import { ConsentManagerGate } from '@/shared/privacy/consent-manager-gate';
 import { QueryProvider } from '@/shared/query/query-provider';
 import { ThemeProvider } from '@/shared/ui-adjacent/theme-provider';
+import { MobileRequestProvider } from '@/shared/ui-adjacent/viewport';
 import { Breakpoints } from '@/shell/debug-breakpoints';
 import { MainContent } from '@/shell/main-content';
 import { MobileBottomBar } from '@/shell/mobile-bottom-bar';
@@ -31,6 +32,7 @@ export function AppShell({
    visibleLocales,
    initialSidebarCollapsed,
    isMac,
+   isMobileRequest,
    queryClient,
    debugBreakpoints,
    debugPageBackground,
@@ -41,6 +43,7 @@ export function AppShell({
    visibleLocales: Locale[];
    initialSidebarCollapsed: boolean | null;
    isMac: boolean;
+   isMobileRequest: boolean;
    queryClient: QueryClient;
    debugBreakpoints: boolean;
    debugPageBackground: boolean;
@@ -49,24 +52,26 @@ export function AppShell({
    return (
       <ThemeProvider>
          {debugBreakpoints && <Breakpoints />}
-         <QueryProvider queryClient={queryClient}>
-            <AuthProvider initialUser={initialUser}>
-               <TooltipProvider>
-                  <OmniSearchProvider>
-                     <RouteTopLoader />
-                     <SidebarProvider visibleLocales={visibleLocales} initialSidebarCollapsed={initialSidebarCollapsed} isMac={isMac}>
-                        <Sidebar />
-                        <MobileTopBar />
-                        <TranslationContextHighlighter messages={messages} />
-                        <MainContent debugPageBackground={debugPageBackground}>{children}</MainContent>
-                        <MobileBottomBar />
-                     </SidebarProvider>
-                     <OmniSearch />
-                     <Toaster />
-                  </OmniSearchProvider>
-               </TooltipProvider>
-            </AuthProvider>
-         </QueryProvider>
+         <MobileRequestProvider mobile={isMobileRequest}>
+            <QueryProvider queryClient={queryClient}>
+               <AuthProvider initialUser={initialUser}>
+                  <TooltipProvider>
+                     <OmniSearchProvider>
+                        <RouteTopLoader />
+                        <SidebarProvider visibleLocales={visibleLocales} initialSidebarCollapsed={initialSidebarCollapsed} isMac={isMac}>
+                           <Sidebar />
+                           <MobileTopBar />
+                           <TranslationContextHighlighter messages={messages} />
+                           <MainContent debugPageBackground={debugPageBackground}>{children}</MainContent>
+                           <MobileBottomBar />
+                        </SidebarProvider>
+                        <OmniSearch />
+                        <Toaster />
+                     </OmniSearchProvider>
+                  </TooltipProvider>
+               </AuthProvider>
+            </QueryProvider>
+         </MobileRequestProvider>
          <ConsentManagerGate />
       </ThemeProvider>
    );

@@ -96,4 +96,4 @@ function withoutAttrs(attribs: sanitizeHtml.Attributes, attrs: string[]) {
    return next;
 }
 
-export { hasRichTextContent, sanitizeRichTextHtml };
+export { sanitizeRichTextHtml };

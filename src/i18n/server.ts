@@ -50,6 +50,8 @@ const totalMessageCount = countMessages(enMessages);
 const localeCompletion = new Map(
    locales.map((locale) => [locale, locale === defaultLocale ? 1 : countTranslatedMessages(enMessages, localeMessages[locale]) / totalMessageCount])
 );
+const mergedMessages = new Map<Locale, Messages>();
+const visibleLocales = locales.filter((locale) => locale === defaultLocale || hasMessages(localeMessages[locale]));
 
 export async function getLocale(): Promise<Locale> {
    const cookieLocale = getCookie('locale');
@@ -60,11 +62,18 @@ export async function getLocale(): Promise<Locale> {
 
 export async function getMessages(): Promise<Messages> {
    const locale = await getLocale();
-   return locale === defaultLocale ? enMessages : mergeMessages(enMessages, localeMessages[locale]);
+   if (locale === defaultLocale) return enMessages;
+
+   let messages = mergedMessages.get(locale);
+   if (!messages) {
+      messages = mergeMessages(enMessages, localeMessages[locale]);
+      mergedMessages.set(locale, messages);
+   }
+   return messages;
 }
 
 export function getVisibleLocales(): Locale[] {
-   return locales.filter((locale) => locale === defaultLocale || hasMessages(localeMessages[locale]));
+   return visibleLocales;
 }
 
 function hasMessages(value: string | Messages): boolean {
