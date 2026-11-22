@@ -20,11 +20,11 @@ export function InstallSection() {
          primary: true
       },
       {
-         key: 'bsmanager',
-         icon: <img src="/images/bsmanager.svg" alt="" className="size-8" aria-hidden />,
-         title: t('install.bsmanager.title'),
-         action: t('install.bsmanager.action'),
-         href: 'https://www.bsmanager.io/',
+         key: 'encore',
+         icon: <img src="/images/encore.svg" alt="" className="size-8" aria-hidden />,
+         title: t('install.encore.title'),
+         action: t('install.encore.action'),
+         href: 'https://encore.scoresaber.com/',
          primary: true
       },
       {

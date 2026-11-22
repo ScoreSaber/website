@@ -184,9 +184,9 @@
             "title": "Meta Quest一体机",
             "action": "在一体机上安装"
          },
-         "bsmanager": {
-            "title": "PC (BSManager)",
-            "action": "下载 BSManager"
+         "encore": {
+            "title": "PC (Encore)",
+            "action": "下载 Encore"
          },
          "beatmods": {
             "title": "PC (BeatMods)",

@@ -184,9 +184,9 @@
             "title": "Meta Quest Standalone",
             "action": "Install on Quest Standalone"
          },
-         "bsmanager": {
-            "title": "PC (BSManager)",
-            "action": "Download BSManager"
+         "encore": {
+            "title": "PC (Encore)",
+            "action": "Download Encore"
          },
          "beatmods": {
             "title": "PC (BeatMods)",

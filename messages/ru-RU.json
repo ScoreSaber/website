@@ -184,9 +184,9 @@
             "title": "Meta Quest версия игры",
             "action": "Установить на Quest версию игры"
          },
-         "bsmanager": {
-            "title": "ПК (BSManager)",
-            "action": "Скачать BSManager"
+         "encore": {
+            "title": "ПК (Encore)",
+            "action": "Скачать Encore"
          },
          "beatmods": {
             "title": "ПК (BeatMods)",
